@@ -1281,5 +1281,6 @@ Có thể **tái sử dụng** kiến thức CRUD/`@Valid`/`Advice` từ **M3 B�
 - [springdoc-openapi](https://springdoc.org/)
 - [Baeldung — OpenAPI](https://www.baeldung.com/spring-rest-openapi-documentation)
 - Module 3: [Bài 3](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai3_MongoDB_Spring_1.md) · [Bài 4](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai4_MongoDB_Spring_2.md) · [Bài 6](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai6_Query_Optimization.md) · [Bài 8](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai8_Unit_Testing.md)
+- Module 4 — [Bài 2 Microservices](./java_m4_bai2_Microservices.md) (REST giữa service; MQ ≠ `@Async`)
 - Phụ lục Module 4: [Phụ lục 1 — Scheduled](./java_m4_phuluc1_Scheduled.md) (`@Scheduled` ≠ `@Async`)
 
