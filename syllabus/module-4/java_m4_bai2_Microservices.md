@@ -546,11 +546,10 @@ Khi có repo `demo-bai2-microservices`: hai app khác port, gọi REST + header 
 
 ### F. Handoff Bài 4 Auth
 
-- Mở Bài 4: tiếp §3 bài này — **làm** JWT + phân quyền  
+- Mở [Bài 4 Auth](./java_m4_bai4_Authentication_Authorization.md): tiếp §3 bài này — **làm** JWT + phân quyền  
 - Authn/Authz form: đã có [M3 Bài 10](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai10_Mini_Project.md)
 
 ### G. Liên kết nội bộ khóa học
 
-- [Bài 1 REST](./java_m4_bai1_RESTful_API.md) · [Phụ lục 1 Scheduled](./java_m4_phuluc1_Scheduled.md)  
-- Bài 4 Auth (tài liệu hiện có): [`java_m4_bai4_Authentication_Authorization.pdf`](../pdf/java_m4_bai4_Authentication_Authorization.pdf)  
+- [Bài 1 REST](./java_m4_bai1_RESTful_API.md) · [Bài 4 Auth](./java_m4_bai4_Authentication_Authorization.md) · [Phụ lục 1 Scheduled](./java_m4_phuluc1_Scheduled.md)  
 - M3: [Bài 3](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai3_MongoDB_Spring_1.md) · [Bài 5](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai5_Relationship_in_MongoDB.md) · [Bài 9](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai9_Online_Payment.md) · [Bài 10](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai10_Mini_Project.md)  

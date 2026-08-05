@@ -12,13 +12,15 @@ Sau bài này, học viên có thể:
 - Dùng **SLF4J** đúng **log level**; cấu hình `logging.level.`*; **không** dùng `System.out` trên server
 - Viết tài liệu API bằng **springdoc OpenAPI** + Swagger UI (`@Operation`, `@ApiResponse`, `@Parameter`)
 
-> **Không nằm trong phạm vi bài này:** Spring Security / JWT chi tiết (Module 4 bài Auth); Kafka/RabbitMQ; AsyncAPI spec; HATEOAS; contract-first OpenAPI gen code; CORS/rate-limit/ETag chi tiết (phụ lục đọc thêm).
+> **Không nằm trong phạm vi bài này:** Spring Security / JWT chi tiết ([Bài 4 Auth](./java_m4_bai4_Authentication_Authorization.md)); Kafka/RabbitMQ; AsyncAPI spec; HATEOAS; contract-first OpenAPI gen code; CORS/rate-limit/ETag chi tiết (phụ lục đọc thêm).
+
+
 
 ## Điều kiện tiên quyết
 
 - **Module 3 — [Bài 3](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai3_MongoDB_Spring_1.md)**: REST CRUD, DTO, `PagedResponse`, `@Valid`, `@RestControllerAdvice` (§6–8)
 - **Module 3 — [Bài 4](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai4_MongoDB_Spring_2.md)**: phân trang + sắp xếp + map Model → DTO (§6–7)
-- *(Khuyến khích)* **Module 3 — [Bài 6](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai6_Query_Optimization.md)** §7: cursor pagination; **[Bài 8](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai8_Unit_Testing.md)** §6: MockMvc theo HTTP method
+- *(Khuyến khích)* **Module 3 — [Bài 6*](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai6_Query_Optimization.md)* §7: cursor pagination; **[Bài 8](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai8_Unit_Testing.md)** §6: MockMvc theo HTTP method
 - JDK 17+, Spring Boot 3.x, Maven
 
 ```xml
@@ -54,12 +56,14 @@ Sau bài này, học viên có thể:
 </dependency>
 ```
 
-> **Demo chuẩn:** [`demo-bai1-restful-api`](../../demo-bai1-restful-api) — in-memory Employee, đủ MapStruct + ModelMapper compare + `@Async` + logging + springdoc.  
+> **Demo chuẩn:** `[demo-bai1-restful-api](../../demo-bai1-restful-api)` — in-memory Employee, đủ MapStruct + ModelMapper compare + `@Async` + logging + springdoc.  
 > Chi tiết chạy app / API: [README](../../demo-bai1-restful-api/README.md).  
-> PDF gốc (tham khảo lịch sử): [`java_m4_bai1_RESTful_API.pdf`](../pdf/java_m4_bai1_RESTful_API.pdf)
+> PDF gốc (tham khảo lịch sử): `[java_m4_bai1_RESTful_API.pdf](../pdf/java_m4_bai1_RESTful_API.pdf)`
 
 > **Thứ tự giảng gợi ý:** §0–1 (lý thuyết ngắn) → scaffold project + CRUD tối thiểu → §2 ModelMapper rồi MapStruct → §3 welcome-sync vs `@Async` (logging nhìn trên console luôn) → §4 chốt quy tắc log → §5 annotate Swagger + Try it out → §6 checklist.  
 > Logging (§4): hệ thống hóa level + package `logging/` (filter). HV đã thấy DEBUG/INFO khi làm §2–3.
+
+
 
 ### Thời lượng gợi ý
 
@@ -73,6 +77,8 @@ Sau bài này, học viên có thể:
 | Logging (chi tiết + thực tế) §4                              | ~15 phút    |
 | springdoc: CRUD + search/pagination §5                       | ~30 phút    |
 | Lab tích hợp + lỗi thường gặp + checklist                    | ~15–20 phút |
+
+
 
 
 ## Nội dung (làm theo thứ tự)
@@ -92,6 +98,8 @@ Sau bài này, học viên có thể:
 
 ---
 
+
+
 ## 0. Bridge Module 3 — bạn đã học, hôm nay không giảng lại
 
 
@@ -109,19 +117,23 @@ Sau bài này, học viên có thể:
 
 ---
 
+
+
 ## Kiến trúc lab (demo chuẩn)
 
 > **Nguyên tắc package:** gom theo **kiến thức mới** trong bài — học viên mở đúng folder là thấy code của mục đó.
 
-| Package | Syllabus | Nội dung |
-|---------|----------|----------|
-| `employee/` | §1 (+ ôn M3) | REST CRUD, DTO, phân trang, validation |
-| `mapping/` | §2 | MapStruct + ModelMapper so sánh |
-| `async/` | §3 | `@EnableAsync` config + `WelcomeEmailService` |
-| `logging/` | §4 | Filter log request + `package-info` |
-| `openapi/` | §5 | `OpenApiConfig` (springdoc) |
-| `exception/` | ôn M3 | Advice + exception |
-| `config/` | scaffold | `DataSeeder` |
+
+| Package      | Syllabus     | Nội dung                                      |
+| ------------ | ------------ | --------------------------------------------- |
+| `employee/`  | §1 (+ ôn M3) | REST CRUD, DTO, phân trang, validation        |
+| `mapping/`   | §2           | MapStruct + ModelMapper so sánh               |
+| `async/`     | §3           | `@EnableAsync` config + `WelcomeEmailService` |
+| `logging/`   | §4           | Filter log request + `package-info`           |
+| `openapi/`   | §5           | `OpenApiConfig` (springdoc)                   |
+| `exception/` | ôn M3        | Advice + exception                            |
+| `config/`    | scaffold     | `DataSeeder`                                  |
+
 
 ```
 src/main/java/vn/demo/
@@ -155,26 +167,32 @@ src/main/java/vn/demo/
     └── DataSeeder.java
 ```
 
-> **Xem code:** [`demo-bai1-restful-api/java-springboot-bai1`](../../demo-bai1-restful-api/java-springboot-bai1)
+> **Xem code:** `[demo-bai1-restful-api/java-springboot-bai1](../../demo-bai1-restful-api/java-springboot-bai1)`
+
+
 
 ### Scaffold nhanh — việc học viên làm trước §2
 
-| Bước | Hành động | File |
-|------|-----------|------|
-| S0.1 | **Tạo** Spring Boot 3 project (Web + Validation) hoặc copy cấu trúc demo | `pom.xml` |
-| S0.2 | **Thêm** dependency MapStruct, ModelMapper, springdoc (+ compiler plugin) | `pom.xml` — xem đầu bài |
-| S0.3 | **Thêm** `Employee` model + 2 DTO + `PagedResponse` | `employee/model`, `employee/dto` |
-| S0.4 | **Thêm** `EmployeeRepository` + `InMemoryEmployeeRepository` | `employee/repository` |
-| S0.5 | **Thêm** exception + `RestExceptionHandler` (ôn M3) | `exception/` |
-| S0.6 | **Thêm** `DataSeeder` + `application.properties` | `config/`, `resources/` |
-| S0.7 | **Thêm** `EmployeeRestController` CRUD tối thiểu (map tay tạm) | `employee/controller` |
-| S0.8 | Chạy app — mapper/async/logging/openapi làm ở §2–5 | `./mvnw spring-boot:run` |
 
+| Bước | Hành động                                                                 | File                             |
+| ---- | ------------------------------------------------------------------------- | -------------------------------- |
+| S0.1 | **Tạo** Spring Boot 3 project (Web + Validation) hoặc copy cấu trúc demo  | `pom.xml`                        |
+| S0.2 | **Thêm** dependency MapStruct, ModelMapper, springdoc (+ compiler plugin) | `pom.xml` — xem đầu bài          |
+| S0.3 | **Thêm** `Employee` model + 2 DTO + `PagedResponse`                       | `employee/model`, `employee/dto` |
+| S0.4 | **Thêm** `EmployeeRepository` + `InMemoryEmployeeRepository`              | `employee/repository`            |
+| S0.5 | **Thêm** exception + `RestExceptionHandler` (ôn M3)                       | `exception/`                     |
+| S0.6 | **Thêm** `DataSeeder` + `application.properties`                          | `config/`, `resources/`          |
+| S0.7 | **Thêm** `EmployeeRestController` CRUD tối thiểu (map tay tạm)            | `employee/controller`            |
+| S0.8 | Chạy app — mapper/async/logging/openapi làm ở §2–5                        | `./mvnw spring-boot:run`         |
 
 
 ---
 
+
+
 ## 1. Chuẩn thiết kế REST (phần mới / hệ thống hóa)
+
+
 
 ### 1.1. Vì sao cần chuẩn?
 
@@ -191,6 +209,8 @@ API thường được **nhiều client** (web, mobile, service khác) dùng lâ
 
 
 > **Ôn M3:** collection movies dùng `/api/movies` — hôm nay **thêm prefix version** `/api/v1/...`.
+
+
 
 ### 1.3. HTTP method theo ngữ nghĩa
 
@@ -209,6 +229,8 @@ API thường được **nhiều client** (web, mobile, service khác) dùng lâ
 
 > **PUT vs PATCH:** đã nhắc ở PDF cũ — giữ. **M3 Bài 3** dùng PUT cho update; có thể bổ sung PATCH khi chỉ sửa vài field.
 
+
+
 ### 1.4. Versioning trên URL
 
 Breaking change (đổi semantics, đổi contract bắt buộc client sửa) → tăng major version.
@@ -224,6 +246,8 @@ Cả hai URL **đều có số version**. Non-breaking (thêm field optional) th
 
 > Đọc thêm (phụ lục): version bằng Header / media type — enterprise hay gặp, không lab buổi này.
 
+
+
 ### 1.5. Phân trang, lọc, sắp xếp (ôn M3)
 
 ```http
@@ -236,6 +260,8 @@ GET /api/v1/employees?page=0&size=20&role=developer&sort=name,asc
 | Offset `page`/`size` | M3 Bài 3–4 · `PagedResponse` | Response nên có **metadata** (`content`, `page`, `totalElements`…) — đừng chỉ trả `List` trần khi list lớn |
 | Cursor `lastSeenId`  | M3 Bài 6 §7                  | Feed / infinite scroll                                                                                     |
 | Filter / sort        | M3 Bài 3–4                   | Giữ query param                                                                                            |
+
+
 
 
 ### 1.6. HTTP status — bảng mở rộng
@@ -258,9 +284,13 @@ GET /api/v1/employees?page=0&size=20&role=developer&sort=name,asc
 
 ---
 
+
+
 ## 2. Mapping DTO: làm ModelMapper → làm MapStruct → rồi mới so sánh
 
 > **Thứ tự giảng trên lớp:** (1) nhắc vì sao cần map · (2) **làm xong** ModelMapper từng bước · (3) **làm xong** MapStruct từng bước với **cùng Model/DTO** · (4) so sánh trải nghiệm · (5) kết luận chọn MapStruct cho lab/project.
+
+
 
 ### 2.1. Bài toán chung (dùng xuyên suốt §2)
 
@@ -317,7 +347,11 @@ public class EmployeeRequestDto {
 
 ---
 
+
+
 ### 2.2. Cách 1 — ModelMapper (từng bước)
+
+
 
 #### Bước M1 — Thêm dependency
 
@@ -329,9 +363,11 @@ public class EmployeeRequestDto {
 </dependency>
 ```
 
+
+
 #### Bước M2 — Đăng ký bean Spring (dùng lại được)
 
-> **Thêm** class: [`config/MapperConfig.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/mapping/MapperConfig.java)
+> **Thêm** class: [`mapping/MapperConfig.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/mapping/MapperConfig.java)
 
 ```java
 @Configuration
@@ -346,6 +382,8 @@ public class MapperConfig {
 }
 ```
 
+
+
 #### Bước M3 — Dùng trong Service
 
 > **Thêm** class so sánh: [`EmployeeModelMapperService.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/mapping/EmployeeModelMapperService.java)  
@@ -355,7 +393,7 @@ public class MapperConfig {
 ```java
 @Service
 @RequiredArgsConstructor
-public class EmployeeService {
+public class EmployeeModelMapperService {
 
     private final EmployeeRepository repository;
     private final ModelMapper modelMapper;
@@ -371,25 +409,41 @@ public class EmployeeService {
     public EmployeeResponseDto create(EmployeeRequestDto request) {
         Employee emp = modelMapper.map(request, Employee.class);
         // password không nên lưu plain — xử lý thủ công:
+        emp.setId(null);
         emp.setPasswordHash(hash(request.getPassword()));
-        emp.setPassword(null); // nếu Model có field password tạm
         Employee saved = repository.save(emp);
         return modelMapper.map(saved, EmployeeResponseDto.class);
     }
 }
 ```
 
-#### Bước M4 — Kiểm tra
+#### Bước M4 — Kiểm tra (URL nhánh ModelMapper)
 
-1. `POST /api/v1/employees` với body có `password`
-2. `GET /api/v1/employees/{id}` — JSON **không** có `password` / `passwordHash`
-3. Đổi tên field trên Model thành `fullName` nhưng DTO vẫn `name` → chạy app, map có thể **sai/null lúc runtime** (để HV thấy rủi ro)
+> Dùng **đúng** base path compare — **không** gọi `/api/v1/employees` (đó là API chính / MapStruct).
+
+1. `POST /api/v1/employees/compare/model-mapper` với body có `password` → **201**
+2. `GET /api/v1/employees/compare/model-mapper/{id}` — JSON **không** có `password` / `passwordHash`
+3. (Tuỳ chọn) Đổi tên field trên Model thành `fullName` nhưng DTO vẫn `name` → chạy app, map có thể **sai/null lúc runtime** (để HV thấy rủi ro)
+
+```bash
+# Tạo bằng ModelMapper
+curl -s -X POST http://localhost:8080/api/v1/employees/compare/model-mapper \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Demo MM","email":"mm@company.com","role":"hr","password":"Secret123!"}'
+
+# Đọc lại — không lộ password
+curl -s http://localhost:8080/api/v1/employees/compare/model-mapper/1
+```
 
 > **Quan sát giảng:** ModelMapper viết rất ít code; lỗi lệch tên field thường lộ khi **chạy**, khó phát hiện lúc build.
 
 ---
 
+
+
 ### 2.3. Cách 2 — MapStruct (từng bước)
+
+
 
 #### Bước S1 — Dependency + annotation processor
 
@@ -423,9 +477,11 @@ Trong `maven-compiler-plugin`:
 </plugin>
 ```
 
+
+
 #### Bước S2 — Khai báo interface mapper
 
-> **Thêm** [`EmployeeMapper.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/mapping/EmployeeMapper.java)
+> **Thêm** `[EmployeeMapper.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/mapping/EmployeeMapper.java)`
 
 ```java
 @Mapper(componentModel = "spring")
@@ -442,7 +498,9 @@ public interface EmployeeMapper {
 - Field cùng tên (`name`, `email`, `role`) → MapStruct tự map.
 - Field không muốn map → `ignore = true` (rõ ràng hơn ModelMapper “im lặng bỏ”).
 
-#### Bước S3 — Compile để sinh implementation
+
+
+#### Bước S3 — Compile để sinh implementation + inject vào Service
 
 ```bash
 ./mvnw clean compile
@@ -453,8 +511,6 @@ Mở file sinh ra (quan trọng để HV “thấy” MapStruct làm gì):
 `target/generated-sources/annotations/.../EmployeeMapperImpl.java`
 
 Bên trong gần giống code viết tay: `dto.setName(employee.getName());` …
-
-#### Bước S4 — Inject vào Service (thay ModelMapper cho API chính)
 
 > **Thêm / cập nhật** [`EmployeeService.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/service/EmployeeService.java) — API chính dùng MapStruct.  
 > Giữ `EmployeeModelMapperService` chỉ để so sánh (không xóa ngay).
@@ -482,12 +538,34 @@ public class EmployeeService {
 }
 ```
 
-#### Bước S5 — Kiểm tra + thử “phá” để thấy fail compile
+#### Bước S4 — Kiểm tra (URL API chính / MapStruct)
 
-1. Gọi lại GET/POST như với ModelMapper — kết quả JSON tương đương.
-2. Đổi DTO field `name` → `fullName` **mà chưa** thêm `@Mapping` — chạy `mvn compile` → **build fail** (MapStruct báo unmapped). Đây là điểm mạnh cần nhấn trên lớp.
+> Song song với **Bước M4** của ModelMapper — nhưng dùng URL **API chính** (không phải `/compare/model-mapper`).
+
+1. `POST /api/v1/employees` với body có `password` → **201**
+2. `GET /api/v1/employees/{id}` — JSON **không** có `password` / `passwordHash`
+3. So nhanh với kết quả M4: JSON tương đương; khác nhau ở **path** và **cách map** (MapStruct vs ModelMapper)
+
+```bash
+# Tạo bằng MapStruct (API chính)
+curl -s -X POST http://localhost:8080/api/v1/employees \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Demo MS","email":"ms@company.com","role":"developer","password":"Secret123!"}'
+
+# Đọc lại — không lộ password
+curl -s http://localhost:8080/api/v1/employees/1
+```
+
+> **Quan sát giảng:** kết quả giống M4, nhưng mapper đã sinh lúc **compile** (`EmployeeMapperImpl`).
+
+#### Bước S5 — Thử “phá” để thấy fail compile (điểm mạnh MapStruct)
+
+1. Đổi DTO field `name` → `fullName` **mà chưa** thêm `@Mapping` — chạy `mvn compile` → **build fail** (MapStruct báo unmapped).
+2. Đây là điểm mạnh cần nhấn trên lớp — khác ModelMapper (lỗi thường chỉ lộ lúc **chạy**).
 
 ---
+
+
 
 ### 2.4. So sánh sau khi đã làm cả hai
 
@@ -502,6 +580,8 @@ public class EmployeeService {
 | Phù hợp                | Demo nhanh, ít DTO                 | API thật, team, CI          |
 
 
+
+
 ### 2.5. Kết luận (chốt cho lab Module 4)
 
 1. **Lab và project chuẩn của khóa → dùng MapStruct.**
@@ -509,23 +589,29 @@ public class EmployeeService {
 3. Dù dùng thư viện nào: map ở **biên** (`RequestDto → Model`, `Model → ResponseDto`); **không** trả Model thô; field nhạy cảm xử lý tường minh (`ignore` / không đưa vào ResponseDto).
 4. Sau §2 có thể **gỡ dependency ModelMapper** khỏi `pom` nếu muốn project gọn — giữ MapStruct.
 
+
+
 ### Việc học viên làm (§2)
 
 
-| Bước | Hành động | File (demo) |
-|------|-----------|-------------|
+| Bước | Hành động                                                                    | File (demo)                                                                          |
+| ---- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | 2.A | **Thêm** Model + 2 DTO (nếu chưa có từ scaffold) | `employee/model`, `employee/dto` |
-| 2.B | **Thêm** toàn bộ package `mapping/` (ModelMapper nhánh) | `mapping/MapperConfig`, `EmployeeModelMapperService`, `ModelMapperCompareController` |
-| 2.C | Gọi `GET/POST .../compare/model-mapper` — JSON không lộ password | Swagger / curl |
-| 2.D | **Thêm** `mapping/EmployeeMapper` + compiler plugin; `mvn clean compile` | có `EmployeeMapperImpl` |
-| 2.E | **Cập nhật** `employee/service/EmployeeService` dùng MapStruct | inject `EmployeeMapper` |
-| 2.F | Viết 5–7 câu so sánh vào README | compile vs runtime |
-| 2.G | API chính chỉ inject MapStruct; ModelMapper chỉ còn trong `mapping/` compare | — |
+| 2.B | **Thêm** package `mapping/` (ModelMapper nhánh) | `MapperConfig`, `EmployeeModelMapperService`, `ModelMapperCompareController` |
+| 2.C | **M4** Kiểm tra `POST/GET .../compare/model-mapper` — không lộ password | Swagger / curl |
+| 2.D | **Thêm** `EmployeeMapper` + compile + inject `EmployeeService` | `mapping/`, `employee/service` |
+| 2.E | **S4** Kiểm tra `POST/GET /api/v1/employees` — không lộ password | API chính |
+| 2.F | **S5** (optional) thử đổi tên field → fail compile | README ghi chú |
+| 2.G | Viết 5–7 câu so sánh; API chính chỉ dùng MapStruct | README |
 
 
 ---
 
+
+
 ## 3. Xử lý nền với `@Async` (không gọi nhầm “Async API”)
+
+
 
 ### 3.1. Ẩn dụ mở đầu (giảng trước khi code)
 
@@ -535,12 +621,14 @@ Hình dung quầy tiếp tân cửa hàng:
 | Tình huống                                                                                                              | Giống kỹ thuật nào?                                                                 |
 | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | Khách hỏi “còn size M không?” — nhân viên **đứng chờ** kiểm kho rồi mới trả lời                                         | **A. Sync** — request chờ xong mới trả HTTP                                         |
-| Khách đăng ký thẻ thành viên — nhân viên nói “OK, anh/chị về đi”, rồi **ra sau** mới gửi email chào                     | **B. `@Async`** — trả lời sớm, việc phụ chạy nền **trong cùng cửa hàng (cùng app)** |
+| Khách đăng ký thẻ thành viên — nhân viên nói “OK, anh/chị về đi”, rồi **ra sau** mới gửi email chào                     | **B.** `@Async` — trả lời sớm, việc phụ chạy nền **trong cùng cửa hàng (cùng app)** |
 | Khách đặt may áo mất 3 ngày — nhận **phiếu mã đơn**, hôm sau mang phiếu hỏi “xong chưa?” hoặc shop **gọi lại** khi xong | **C. Job pattern** — 202 + `jobId` / webhook (gần M3 Bài 9 PayPal)                  |
 
 
 > **Câu cần thuộc:** `@Async` = “nhờ đồng nghiệp trong **cùng app** làm giúp việc phụ”.  
 > **Không phải:** hàng đợi Kafka/Rabbit, cũng **không tự động** bằng “Async API” kiểu theo dõi job trừ khi bạn **tự code** thêm tầng C.
+
+
 
 ### 3.2. Ba tầng nghĩa (bảng bắt buộc)
 
@@ -548,7 +636,7 @@ Hình dung quầy tiếp tân cửa hàng:
 | Tầng                                      | Nghĩa kỹ thuật                                               | Ví dụ trong bài                                         | Client thấy gì?                                                         |
 | ----------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------- |
 | **A. Sync request**                       | Thread xử lý request làm hết việc rồi mới ghi response       | `GET /api/v1/employees/{id}` đọc DB                     | `200` + JSON **khi xong**                                               |
-| **B. Background `@Async`**                | Trả HTTP sớm; method `@Async` chạy thread khác **trong JVM** | Sau khi tạo NV, gửi email chào (giả lập `Thread.sleep`) | Thường `202 Accepted` + message; **không** có nội dung email trong body |
+| **B. Background** `@Async`                | Trả HTTP sớm; method `@Async` chạy thread khác **trong JVM** | Sau khi tạo NV, gửi email chào (giả lập `Thread.sleep`) | Thường `202 Accepted` + message; **không** có nội dung email trong body |
 | **C. Job / “Async API” đúng nghĩa ngành** | Tạo việc → lưu trạng thái → client poll hoặc nhận webhook    | Export CSV lớn; thanh toán chờ cổng                     | `202` + `jobId`; `GET /jobs/{id}`; hoặc callback                        |
 
 
@@ -575,6 +663,8 @@ sequenceDiagram
 
 ### 3.3. Demo “sai” rồi mới “đúng” (để khỏi hiểu nhầm)
 
+
+
 #### 3.3.1. Cách làm sync — khách phải chờ (tầng A, cố ý chậm)
 
 ```java
@@ -596,7 +686,7 @@ Các bước lab:
 
 **B1 — Bật async trên ứng dụng**
 
-> **Cập nhật** [`DemoBai1RestApplication.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/DemoBai1RestApplication.java) — thêm `@EnableAsync`
+> **Cập nhật** `[DemoBai1RestApplication.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/DemoBai1RestApplication.java)` — thêm `@EnableAsync`
 
 ```java
 @SpringBootApplication
@@ -610,7 +700,7 @@ public class DemoBai1RestApplication {
 
 **B2 — Cấu hình thread pool (nên có)**
 
-> **Thêm** [`AsyncConfig.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/async/AsyncConfig.java)
+> **Thêm** `[AsyncConfig.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/async/AsyncConfig.java)`
 
 ```java
 @Configuration
@@ -642,9 +732,9 @@ public class AsyncConfig implements AsyncConfigurer {
 }
 ```
 
-**B3 — Service riêng có `@Async`** (bắt buộc tách class / gọi qua bean Spring)
+**B3 — Service riêng có** `@Async` (bắt buộc tách class / gọi qua bean Spring)
 
-> **Thêm** [`WelcomeEmailService.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/async/WelcomeEmailService.java)  
+> **Thêm** `[WelcomeEmailService.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/async/WelcomeEmailService.java)`  
 > Delay cấu hình bằng `app.email.delay-ms` trong `application.properties` (mặc định 3000).
 
 ```java
@@ -676,7 +766,8 @@ public class WelcomeEmailService {
 
 **B4 — Controller trả 202 ngay (+ endpoint sync để so sánh)**
 
-> **Cập nhật** [`EmployeeRestController.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/controller/EmployeeRestController.java):  
+> **Cập nhật** `[EmployeeRestController.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/controller/EmployeeRestController.java)`:  
+>
 > - `POST /{id}/welcome-sync` — sync chậm (§3.3.1)  
 > - `POST /{id}/welcome` — `@Async` + **202**
 
@@ -708,6 +799,8 @@ public class EmployeeRestController {
 2. Console: log `Start sending...` / `Finished...` xuất hiện **sau**, trên thread tên `async-...` (không phải `http-nio-...`).
 3. So với `welcome-sync`: cùng `sleep(3000)` nhưng sync làm client chờ đủ 3 giây.
 
+
+
 ### 3.4. Các hiểu nhầm thường gặp
 
 
@@ -720,28 +813,38 @@ public class EmployeeRestController {
 | “Mọi API chậm đều nên `@Async`”                             | **Không.** Đọc dữ liệu trả về client → vẫn sync. Chỉ tách việc **phụ / không cần trong response**.                                   |
 
 
+
+
 ### 3.5. Khi nào nên / không nên dùng `@Async`
 
 **Ý đơn giản:** Chỉ dùng `@Async` khi việc đó **không cần trả ngay cho người gọi API**, và làm xong **trong cùng app** là đủ.
 
 #### Nên dùng `@Async` khi…
 
-| Tình huống | Vì sao hợp lý? | Ví dụ |
-|------------|----------------|-------|
-| Việc **phụ**, client **không cần kết quả** trong response | Trả API xong sớm; việc phụ chạy sau | Gửi email / SMS chào sau khi tạo tài khoản |
-| Việc làm thêm vài giây, nếu để sync thì API **chậm khó chịu** | Tránh timeout / UX kém | Ghi log kiểm toán, gọi API thông báo nội bộ nhẹ |
-| Thất bại việc phụ **không làm hỏng** nghiệp vụ chính | Tạo user vẫn thành công dù email gửi chậm/lỗi | Email chào lỗi → user vẫn đã được tạo |
+
+| Tình huống                                                    | Vì sao hợp lý?                                | Ví dụ                                           |
+| ------------------------------------------------------------- | --------------------------------------------- | ----------------------------------------------- |
+| Việc **phụ**, client **không cần kết quả** trong response     | Trả API xong sớm; việc phụ chạy sau           | Gửi email / SMS chào sau khi tạo tài khoản      |
+| Việc làm thêm vài giây, nếu để sync thì API **chậm khó chịu** | Tránh timeout / UX kém                        | Ghi log kiểm toán, gọi API thông báo nội bộ nhẹ |
+| Thất bại việc phụ **không làm hỏng** nghiệp vụ chính          | Tạo user vẫn thành công dù email gửi chậm/lỗi | Email chào lỗi → user vẫn đã được tạo           |
+
 
 > Nhớ lab: `POST .../welcome` trả **202** ngay; email `sleep(3s)` chạy sau — đúng kiểu “nên dùng”.
 
+
+
 #### Không nên dùng `@Async` khi…
 
-| Tình huống | Vì sao không hợp? | Nên làm gì thay thế? |
-|------------|-------------------|----------------------|
-| Client **cần dữ liệu ngay** trong cùng lần gọi | `@Async` không “chờ xong rồi trả kết quả chính” | Giữ **sync** (như `GET` employee) |
-| Người dùng cần biết **đã xong chưa / % tiến độ / link tải** | Chỉ `@Async` + 202 **không đủ** theo dõi | Làm thêm lưu trạng thái + `GET` hỏi tiến độ (tầng C — chỉ cần biết khái niệm) |
-| Việc rất nặng, chạy lâu, hoặc **tắt app là mất việc đang làm** | `@Async` sống trong bộ nhớ process; restart = mất | `@Scheduled` (Phụ lục 1), hoặc hàng đợi / worker (bài sau) |
-| Cần chạy **đúng giờ mỗi ngày** dù không ai gọi API | `@Async` chỉ chạy khi có request kích hoạt | Dùng **`@Scheduled`** |
+
+| Tình huống                                                     | Vì sao không hợp?                                 | Nên làm gì thay thế?                                                          |
+| -------------------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Client **cần dữ liệu ngay** trong cùng lần gọi                 | `@Async` không “chờ xong rồi trả kết quả chính”   | Giữ **sync** (như `GET` employee)                                             |
+| Người dùng cần biết **đã xong chưa / % tiến độ / link tải**    | Chỉ `@Async` + 202 **không đủ** theo dõi          | Làm thêm lưu trạng thái + `GET` hỏi tiến độ (tầng C — chỉ cần biết khái niệm) |
+| Việc rất nặng, chạy lâu, hoặc **tắt app là mất việc đang làm** | `@Async` sống trong bộ nhớ process; restart = mất | `@Scheduled` (Phụ lục 1), hoặc hàng đợi / worker (bài sau)                    |
+| Cần chạy **đúng giờ mỗi ngày** dù không ai gọi API             | `@Async` chỉ chạy khi có request kích hoạt        | Dùng `@Scheduled`                                                             |
+
+
+
 
 #### Câu nhớ nhanh (nói trên lớp)
 
@@ -749,21 +852,28 @@ public class EmployeeRestController {
 - **Việc phụ, làm sau cũng được** → **có thể** `@Async`.
 - **Cần hỏi “xong chưa?” hoặc chạy theo lịch** → **không chỉ** `@Async`.
 
+
+
 ### Việc học viên làm (§3)
 
 
-| Bước | Hành động | File |
-|------|-----------|------|
-| 3.1 | **Cập nhật** `POST .../welcome-sync` (sleep 3s) | `employee/controller/EmployeeRestController` |
-| 3.2 | **Cập nhật** Application `@EnableAsync` + **Thêm** `async/AsyncConfig` | `DemoBai1RestApplication`, `async/` |
-| 3.3 | **Thêm** `async/WelcomeEmailService` `@Async` | `async/` |
-| 3.4 | **Cập nhật** `POST .../welcome` trả **202** | `employee/controller` |
-| 3.5 | So Postman: sync chờ ~3s vs async &lt;100ms; log `async-*` | Console |
-| 3.6 | README: A/B/C + bảng §3.5 (khi nào dùng) | README |
+| Bước | Hành động                                                              | File                                         |
+| ---- | ---------------------------------------------------------------------- | -------------------------------------------- |
+| 3.1  | **Cập nhật** `POST .../welcome-sync` (sleep 3s)                        | `employee/controller/EmployeeRestController` |
+| 3.2  | **Cập nhật** Application `@EnableAsync` + **Thêm** `async/AsyncConfig` | `DemoBai1RestApplication`, `async/`          |
+| 3.3  | **Thêm** `async/WelcomeEmailService` `@Async`                          | `async/`                                     |
+| 3.4  | **Cập nhật** `POST .../welcome` trả **202**                            | `employee/controller`                        |
+| 3.5  | So Postman: sync chờ ~3s vs async <100ms; log `async-*`                | Console                                      |
+| 3.6  | README: A/B/C + bảng §3.5 (khi nào dùng)                               | README                                       |
+
 
 ---
 
+
+
 ## 4. Logging — giải thích kỹ, rồi áp dụng thực tế
+
+
 
 ### 4.1. Logging là gì? Khác `System.out` thế nào?
 
@@ -833,6 +943,8 @@ public EmployeeResponseDto create(EmployeeRequestDto request) {
 | **ERROR** | Thất bại cần người xử lý                        | DB down; exception không mong đợi khi tạo đơn          | **Bật** — thường có alert          |
 
 
+
+
 ### 4.4. Cấu hình thực tế
 
 ```properties
@@ -852,6 +964,8 @@ logging.level.org.springframework.web=INFO
 1. Để `vn.demo=DEBUG` → gọi create → thấy cả `debug` lẫn `info`.
 2. Đổi thành `INFO` → restart → `debug` biến mất, `info`/`warn`/`error` còn.
 3. Cố ý tạo email trùng → thấy `WARN`.
+
+
 
 ### 4.5. Thực tế đi làm — nên log gì / không log gì
 
@@ -874,6 +988,8 @@ logging.level.org.springframework.web=INFO
 | Production  | `root=INFO` (hoặc WARN cho lib); ERROR có alert; DEBUG chỉ bật tạm thời có thời hạn |
 
 
+
+
 ### 4.6. Liên hệ với `@Async`
 
 Trong `WelcomeEmailService`, dùng:
@@ -886,26 +1002,36 @@ log.info("[{}] Finished email to {}", Thread.currentThread().getName(), to);
 
 ### 4.7. Package `logging/` trong demo
 
-| File | Vai trò |
-|------|---------|
-| [`package-info.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/logging/package-info.java) | Mô tả §4 + trỏ tới `application.properties` |
-| [`HttpRequestLoggingFilter.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/logging/HttpRequestLoggingFilter.java) | Log mỗi HTTP request (method, URI, status, ms) |
+
+| File                                                                                                                                            | Vai trò                                        |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `[package-info.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/logging/package-info.java)`                         | Mô tả §4 + trỏ tới `application.properties`    |
+| `[HttpRequestLoggingFilter.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/logging/HttpRequestLoggingFilter.java)` | Log mỗi HTTP request (method, URI, status, ms) |
+
 
 > Log nghiệp vụ (`Employee created`, email async) nằm trong `employee` / `async` — đúng chỗ code chạy. Package `logging` chỉ gom **cấu hình ý niệm + filter minh họa**.
 
+
+
 ### Việc học viên làm (§4)
 
-| Bước | Hành động | File |
-|------|-----------|------|
-| 4.1 | **Cập nhật** `application.properties`: `logging.level.root` + `logging.level.vn.demo` (+ optional `vn.demo.logging`) | `resources/application.properties` |
-| 4.2 | **Thêm** package `logging/` + `HttpRequestLoggingFilter` | `logging/` |
-| 4.3 | **Cập nhật** Service: `debug` / `info` / `warn` / `error` (không `System.out`) | `employee/service`, `async/` |
-| 4.4 | Đổi level DEBUG ↔ INFO, restart, ghi khác biệt README | 2–3 dòng |
-| 4.5 | Thử tạo email trùng → thấy WARN + HTTP 409 | Postman / Swagger |
+
+| Bước | Hành động                                                                                                            | File                               |
+| ---- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| 4.1  | **Cập nhật** `application.properties`: `logging.level.root` + `logging.level.vn.demo` (+ optional `vn.demo.logging`) | `resources/application.properties` |
+| 4.2  | **Thêm** package `logging/` + `HttpRequestLoggingFilter`                                                             | `logging/`                         |
+| 4.3  | **Cập nhật** Service: `debug` / `info` / `warn` / `error` (không `System.out`)                                       | `employee/service`, `async/`       |
+| 4.4  | Đổi level DEBUG ↔ INFO, restart, ghi khác biệt README                                                                | 2–3 dòng                           |
+| 4.5  | Thử tạo email trùng → thấy WARN + HTTP 409                                                                           | Postman / Swagger                  |
+
 
 ---
 
+
+
 ## 5. Viết tài liệu API bằng springdoc (Swagger UI)
+
+
 
 ### 5.1. OpenAPI, Swagger UI, springdoc — phân biệt nhanh
 
@@ -944,22 +1070,24 @@ Không cần viết tay file YAML buổi này (code-first). Contract-first là p
 
 **Bước 4 — Annotate** để tài liệu đọc được như “hợp đồng” cho frontend.
 
-> **Cập nhật** [`EmployeeRestController.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/controller/EmployeeRestController.java)  
-> **Cập nhật** DTO với `@Schema` · **Thêm** (optional) [`OpenApiConfig.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/openapi/OpenApiConfig.java)
+> **Cập nhật** `[EmployeeRestController.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/controller/EmployeeRestController.java)`  
+> **Cập nhật** DTO với `@Schema` · **Thêm** (optional) `[OpenApiConfig.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/openapi/OpenApiConfig.java)`
+
+
 
 ### 5.2.1. Annotation dùng để làm gì? (nhớ nhanh)
 
 Đặt annotation = **viết chữ giải thích** cho Swagger UI. Code vẫn chạy như cũ; chỉ tài liệu đẹp hơn.
 
 
-| Annotation | Gắn ở đâu? | Dùng để làm gì? | Ví dụ ngắn |
-|------------|------------|-----------------|------------|
-| `@Tag` | Class Controller | **Gom nhóm** API trên Swagger (một “hộp” tên riêng) | `@Tag(name = "Employees")` → mọi API trong class nằm chung nhóm Employees |
-| `@Operation` | Method API | **Tiêu đề + mô tả** một API | `summary = "Tạo employee"` — dòng chữ HV thấy khi mở endpoint |
-| `@ApiResponse` | Method API | **Mô tả từng mã HTTP** có thể trả về | `responseCode = "201"` → “Tạo thành công”; `404` → “Không tìm thấy” |
-| `@Parameter` | Tham số (`@PathVariable` / `@RequestParam`) | **Giải thích + example** cho ô nhập trên Try it out | `example = "1"` → HV khỏi đoán phải gõ gì |
-| `@Schema` | Class DTO hoặc field | **Mô tả JSON** (tên model, mô tả field, giá trị mẫu) | `@Schema(example = "a@company.com")` trên `email` |
-| `@RequestBody` | (Spring sẵn có) | Đánh dấu body JSON — springdoc **tự đọc** kiểu DTO; thêm `@Schema` trên DTO cho rõ | Không bắt buộc annotation OpenAPI riêng cho body đơn giản |
+| Annotation     | Gắn ở đâu?                                  | Dùng để làm gì?                                                                    | Ví dụ ngắn                                                                |
+| -------------- | ------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `@Tag`         | Class Controller                            | **Gom nhóm** API trên Swagger (một “hộp” tên riêng)                                | `@Tag(name = "Employees")` → mọi API trong class nằm chung nhóm Employees |
+| `@Operation`   | Method API                                  | **Tiêu đề + mô tả** một API                                                        | `summary = "Tạo employee"` — dòng chữ HV thấy khi mở endpoint             |
+| `@ApiResponse` | Method API                                  | **Mô tả từng mã HTTP** có thể trả về                                               | `responseCode = "201"` → “Tạo thành công”; `404` → “Không tìm thấy”       |
+| `@Parameter`   | Tham số (`@PathVariable` / `@RequestParam`) | **Giải thích + example** cho ô nhập trên Try it out                                | `example = "1"` → HV khỏi đoán phải gõ gì                                 |
+| `@Schema`      | Class DTO hoặc field                        | **Mô tả JSON** (tên model, mô tả field, giá trị mẫu)                               | `@Schema(example = "a@company.com")` trên `email`                         |
+| `@RequestBody` | (Spring sẵn có)                             | Đánh dấu body JSON — springdoc **tự đọc** kiểu DTO; thêm `@Schema` trên DTO cho rõ | Không bắt buộc annotation OpenAPI riêng cho body đơn giản                 |
 
 
 **Thứ tự nhớ khi annotate một API:**
@@ -972,21 +1100,25 @@ Không cần viết tay file YAML buổi này (code-first). Contract-first là p
 
 > Chưa annotate: Swagger vẫn hiện API (springdoc đọc `@GetMapping`…). Annotate = giúp **người đọc / frontend** hiểu nhanh, không thay đổi nghiệp vụ.
 
+
+
 ### 5.3. Controller mẫu đủ CRUD + search + pagination
 
 Giả sử API học viên cần hình dung trên Swagger:
 
 
-| Method | Path | Việc |
-|--------|------|------|
-| GET | `/api/v1/employees` | List + **pagination** + **search** |
-| GET | `/api/v1/employees/{id}` | Chi tiết |
-| POST | `/api/v1/employees` | Tạo (201) |
-| PUT | `/api/v1/employees/{id}` | Cập nhật |
-| DELETE | `/api/v1/employees/{id}` | Xóa (204) |
-| POST | `/api/v1/employees/{id}/welcome` | `@Async` → 202 |
-| POST | `/api/v1/employees/{id}/welcome-sync` | Lab so sánh sync (chậm) |
-| GET/POST | `/api/v1/employees/compare/model-mapper/...` | Lab ModelMapper §2.2 |
+| Method   | Path                                         | Việc                               |
+| -------- | -------------------------------------------- | ---------------------------------- |
+| GET      | `/api/v1/employees`                          | List + **pagination** + **search** |
+| GET      | `/api/v1/employees/{id}`                     | Chi tiết                           |
+| POST     | `/api/v1/employees`                          | Tạo (201)                          |
+| PUT      | `/api/v1/employees/{id}`                     | Cập nhật                           |
+| DELETE   | `/api/v1/employees/{id}`                     | Xóa (204)                          |
+| POST     | `/api/v1/employees/{id}/welcome`             | `@Async` → 202                     |
+| POST     | `/api/v1/employees/{id}/welcome-sync`        | Lab so sánh sync (chậm)            |
+| GET/POST | `/api/v1/employees/compare/model-mapper/...` | Lab ModelMapper §2.2               |
+
+
 
 
 #### 5.3.1. DTO có `@Schema` (để Swagger hiện example)
@@ -1038,7 +1170,9 @@ public class PagedResponse<T> {
 }
 ```
 
-> `PagedResponse` — ôn lại contract M3 Bài 3; demo đủ field metadata như trên (xem [`PagedResponse.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/dto/PagedResponse.java)).
+> `PagedResponse` — ôn lại contract M3 Bài 3; demo đủ field metadata như trên (xem `[PagedResponse.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/dto/PagedResponse.java)`).
+
+
 
 #### 5.3.2. Controller annotate đầy đủ
 
@@ -1133,7 +1267,9 @@ public class EmployeeRestController {
 }
 ```
 
-> **Xem code đầy đủ** (kèm `welcome-sync`, search/page, CRUD): [`EmployeeRestController.java`](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/controller/EmployeeRestController.java)
+> **Xem code đầy đủ** (kèm `welcome-sync`, search/page, CRUD): `[EmployeeRestController.java](../../demo-bai1-restful-api/java-springboot-bai1/src/main/java/vn/demo/employee/controller/EmployeeRestController.java)`
+
+
 
 ### 5.4. Hướng dẫn Try it out trên Swagger UI (làm lần lượt)
 
@@ -1150,6 +1286,8 @@ Giảng viên / học viên thao tác theo thứ tự để “thấy” đủ s
 9. `GET /{id}` lại → **404** (nếu đã gắn `@RestControllerAdvice` như M3)
 
 > Nếu validation fail (bỏ trống `name`) → **400** — Swagger vẫn hữu ích để demo lỗi contract.
+
+
 
 ### 5.5. (Optional) Thông tin chung API
 
@@ -1174,35 +1312,43 @@ Hiện ở đầu trang Swagger UI.
 - [springdoc.org](https://springdoc.org/)
 - [Baeldung — Spring REST OpenAPI](https://www.baeldung.com/spring-rest-openapi-documentation)
 
+
+
 ### Việc học viên làm (§5)
 
 
-| Bước | Hành động | File |
-|------|-----------|------|
-| 5.1 | Dependency springdoc đã có → mở Swagger UI | browser |
-| 5.2 | **Cập nhật** annotate GET search/page + CRUD + welcome (+ sync) | `employee/controller`, `employee/dto` |
-| 5.3 | Try it out đủ chu trình §5.4 | 200 / 201 / 202 / 204 |
-| 5.4 | **Thêm** `OpenApiConfig` (optional) | `openapi/OpenApiConfig.java` |
+| Bước | Hành động                                                       | File                                  |
+| ---- | --------------------------------------------------------------- | ------------------------------------- |
+| 5.1  | Dependency springdoc đã có → mở Swagger UI                      | browser                               |
+| 5.2  | **Cập nhật** annotate GET search/page + CRUD + welcome (+ sync) | `employee/controller`, `employee/dto` |
+| 5.3  | Try it out đủ chu trình §5.4                                    | 200 / 201 / 202 / 204                 |
+| 5.4  | **Thêm** `OpenApiConfig` (optional)                             | `openapi/OpenApiConfig.java`          |
 
 
 ---
 
+
+
 ## 6. Lab tích hợp (cuối buổi)
 
-Đối chiếu với demo chuẩn [`demo-bai1-restful-api`](../../demo-bai1-restful-api) — HV tự làm lại hoặc giải thích từng file:
+Đối chiếu với demo chuẩn `[demo-bai1-restful-api](../../demo-bai1-restful-api)` — HV tự làm lại hoặc giải thích từng file:
 
-| # | Việc | Class / endpoint demo |
-|---|------|------------------------|
-| 1 | Base path `/api/v1/employees` | `EmployeeRestController` |
-| 2 | ModelMapper compare rồi MapStruct chính | `ModelMapperCompareController` → `EmployeeMapper` |
-| 3 | Search + pagination + CRUD | `GET/POST/PUT/DELETE` |
-| 4 | `welcome-sync` vs `welcome` (@Async, 202) | `WelcomeEmailService` |
-| 5 | Logging đúng level | `application.properties` + Service |
-| 6 | springdoc Try it out §5.4 | Swagger UI |
+
+| #   | Việc                                      | Class / endpoint demo                             |
+| --- | ----------------------------------------- | ------------------------------------------------- |
+| 1   | Base path `/api/v1/employees`             | `EmployeeRestController`                          |
+| 2   | ModelMapper compare rồi MapStruct chính   | `ModelMapperCompareController` → `EmployeeMapper` |
+| 3   | Search + pagination + CRUD                | `GET/POST/PUT/DELETE`                             |
+| 4   | `welcome-sync` vs `welcome` (@Async, 202) | `WelcomeEmailService`                             |
+| 5   | Logging đúng level                        | `application.properties` + Service                |
+| 6   | springdoc Try it out §5.4                 | Swagger UI                                        |
+
 
 Có thể **tái sử dụng** kiến thức CRUD/`@Valid`/`Advice` từ **M3 Bài 3** — không viết lại bài giảng validation.
 
 ---
+
+
 
 ## 7. Lỗi thường gặp
 
@@ -1218,6 +1364,8 @@ Có thể **tái sử dụng** kiến thức CRUD/`@Valid`/`Advice` từ **M3 B�
 
 
 ---
+
+
 
 ## Tóm tắt
 
@@ -1236,7 +1384,11 @@ Có thể **tái sử dụng** kiến thức CRUD/`@Valid`/`Advice` từ **M3 B�
 
 ---
 
+
+
 ## Phụ lục
+
+
 
 ### Bài tập
 
@@ -1248,6 +1400,8 @@ Có thể **tái sử dụng** kiến thức CRUD/`@Valid`/`Advice` từ **M3 B�
 6. **Mở rộng:** `GET /api/v1/jobs/{id}` sau welcome — minh họa tầng C.
 7. **Mở rộng:** PATCH chỉ cập nhật `name` hoặc `role`.
 8. **Đọc hiểu:** 5–7 câu so sánh MapStruct vs ModelMapper + 3 tầng async (A/B/C).
+
+
 
 ### Checklist nộp bài
 
@@ -1262,6 +1416,8 @@ Có thể **tái sử dụng** kiến thức CRUD/`@Valid`/`Advice` từ **M3 B�
 - [ ] Không còn `System.out.println` nghiệp vụ; có DEBUG/INFO/WARN/ERROR hợp lý
 - [ ] Swagger UI: Try it out được search/page + CRUD + welcome (annotate `@Tag`/`@Operation`/`@Parameter`)
 
+
+
 ### Đọc thêm (không giảng hết trên lớp)
 
 - Versioning bằng Header / `Accept` media type
@@ -1271,10 +1427,12 @@ Có thể **tái sử dụng** kiến thức CRUD/`@Valid`/`Advice` từ **M3 B�
 - AsyncAPI / message-driven — khác `@Async`
 - Contract-first: viết `openapi.yaml` trước rồi gen code
 
+
+
 ### Liên kết tham khảo
 
-- Demo: [`demo-bai1-restful-api`](../../demo-bai1-restful-api) · [README](../../demo-bai1-restful-api/README.md)
-- PDF lịch sử: [`java_m4_bai1_RESTful_API.pdf`](../pdf/java_m4_bai1_RESTful_API.pdf)
+- Demo: `[demo-bai1-restful-api](../../demo-bai1-restful-api)` · [README](../../demo-bai1-restful-api/README.md)
+- PDF lịch sử: `[java_m4_bai1_RESTful_API.pdf](../pdf/java_m4_bai1_RESTful_API.pdf)`
 - [MapStruct documentation](https://mapstruct.org/)
 - [ModelMapper](https://modelmapper.org/)
 - [Spring @Async](https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-async)
