@@ -12,7 +12,7 @@ Sau bài này, học viên có thể:
 - Dùng **SLF4J** đúng **log level**; cấu hình `logging.level.`*; **không** dùng `System.out` trên server
 - Viết tài liệu API bằng **springdoc OpenAPI** + Swagger UI (`@Operation`, `@ApiResponse`, `@Parameter`)
 
-> **Không nằm trong phạm vi bài này:** Spring Security / JWT chi tiết ([Bài 4 Auth](./java_m4_bai4_Authentication_Authorization.md)); Kafka/RabbitMQ; AsyncAPI spec; HATEOAS; contract-first OpenAPI gen code; CORS/rate-limit/ETag chi tiết (phụ lục đọc thêm).
+> **Không nằm trong phạm vi bài này:** Spring Security / JWT chi tiết ([Bài 4 Auth](./4_java_m4_bai4_Authentication_Authorization.md)); Kafka/RabbitMQ; AsyncAPI spec; HATEOAS; contract-first OpenAPI gen code; CORS/rate-limit/ETag chi tiết (phụ lục đọc thêm).
 
 
 

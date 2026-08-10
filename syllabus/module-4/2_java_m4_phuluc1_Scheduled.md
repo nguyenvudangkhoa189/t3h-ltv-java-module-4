@@ -21,7 +21,7 @@ Sau phụ lục này, học viên có thể:
 
 - **Module 2 — Bài 4**: Spring Boot project, `@Component` / `@Service`, `application.properties`
 - **Module 2 — Bài 5+**: `@RestController` / Service layer (Controller → Service)
-- *(Khuyến khích)* **[Module 4 — Bài 4 Auth](./java_m4_bai4_Authentication_Authorization.md)**: gắn ví dụ khóa tài khoản với flow đăng ký + kích hoạt
+- *(Khuyến khích)* **[Module 4 — Bài 4 Auth](./4_java_m4_bai4_Authentication_Authorization.md)**: gắn ví dụ khóa tài khoản với flow đăng ký + kích hoạt
 - JDK 17+, Spring Boot 3.x
 - **Không cần** dependency mới — `spring-boot-starter-web` đã đủ cho `@Scheduled`
 
@@ -756,6 +756,6 @@ Khi `fixedRate` mà method chạy lâu hơn khoảng cách lịch → dùng cờ
 - [Cron expression (Spring)](https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-cron-expression)
 - **Demo chuẩn:** `[demo-phuluc1-scheduled](../../demo-phuluc1-scheduled)` · [README](../../demo-phuluc1-scheduled/README.md)
 - Module 2 — Bài 4: Spring Boot cơ bản (`java_m2_bai4_SpringBoot.md`)
-- [Module 4 — Bài 4 Auth](./java_m4_bai4_Authentication_Authorization.md)
+- [Module 4 — Bài 4 Auth](./4_java_m4_bai4_Authentication_Authorization.md)
 - Module 4 — Bài 10 Final Project (`syllabus/pdf/java_m4_bai10_Final_Project.pdf`)
 
