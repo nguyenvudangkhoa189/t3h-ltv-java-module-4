@@ -604,4 +604,4 @@ curl -s -X POST http://localhost:8080/api/accounts/register \
 - [Tạo App Password](https://myaccount.google.com/apppasswords)
 - Module 4 — Bài 1 RESTful API (`@Async` + email giả lập): `java_m4_bai1_RESTful_API.md`
 - Module 4 — Phụ lục 1 Scheduled: `java_m4_phuluc1_Scheduled.md`
-- Module 4 — Bài 2 Microservices (async / queue — đọc hiểu): `java_m4_bai2_Microservices.md`
+- Module 4 — [Bài 2 Microservices](./5_java_m4_bai2_Microservices.md) — lab ecommerce dùng mail `@Async` + `@Scheduled` retry (`demo-bai2-ecommerce-ms`)
