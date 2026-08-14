@@ -1,0 +1,39 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  
+  data:
+    mongodb:
+      uri: mongodb://root:DBVWiYdDoMnfWmK@localhost:27017/auth_db?authSource=admin
+  
+  security:
+    user:
+      name: admin
+      password: admin
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:demo-bai4-lab-secret-change-me-32chars-min}
+    access-token:
+      expiration-minutes: 15
+    refresh-token:
+      expiration-days: 7
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [cid=%X{cid}] [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    vn.demo: DEBUG
+    org.springframework.security: DEBUG

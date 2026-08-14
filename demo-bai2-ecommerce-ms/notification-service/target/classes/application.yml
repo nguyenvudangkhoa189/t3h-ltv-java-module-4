@@ -1,0 +1,40 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: notification-service
+  
+  # Email configuration with environment variables
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+app:
+  mail:
+    # Disable actual mail sending by default for lab environment
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:noreply@ecommerce-demo.com}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [cid=%X{cid}] [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    vn.demo: DEBUG

@@ -1,0 +1,25 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: product-service
+  
+  data:
+    mongodb:
+      uri: mongodb://root:DBVWiYdDoMnfWmK@localhost:27017/product_db?authSource=admin
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [cid=%X{cid}] [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    vn.demo: DEBUG

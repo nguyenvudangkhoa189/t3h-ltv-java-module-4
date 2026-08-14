@@ -1,0 +1,76 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  
+  cloud:
+    gateway:
+      routes:
+        # Auth Service Routes
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - CorrelationIdGatewayFilter
+            
+        # Product Service Routes
+        - id: product-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - CorrelationIdGatewayFilter
+            - JwtAuthGatewayFilter
+            
+        # Order Service Routes  
+        - id: order-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - CorrelationIdGatewayFilter
+            - JwtAuthGatewayFilter
+      
+      # Global CORS configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:demo-bai4-lab-secret-change-me-32chars-min}
+  
+  # Service URLs for configuration
+  services:
+    auth: http://localhost:8081
+    product: http://localhost:8082
+    order: http://localhost:8083
+    notification: http://localhost:8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [cid=%X{cid}] [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    vn.demo: DEBUG
+    org.springframework.cloud.gateway: DEBUG
