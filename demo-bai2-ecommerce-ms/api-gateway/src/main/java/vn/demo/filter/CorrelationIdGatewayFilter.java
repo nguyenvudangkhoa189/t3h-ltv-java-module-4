@@ -10,6 +10,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
@@ -19,8 +20,11 @@ import reactor.util.context.Context;
  * <p>Client công khai có thể gửi id trùng / giả. Biên Gateway tạo UUID, gỡ header cũ,
  * forward xuống service và trả lại trên response để lần log {@code [cid=…]}.</p>
  *
- * <p>WebFlux: gắn MDC từ Reactor Context vì thread có thể đổi.</p>
+ * <p>WebFlux: ghi MDC <b>trước</b> khi subscribe chain (không dùng {@code doOnEach}
+ * sau khi inner filter đã log). Giá trị nằm trong Reactor Context để thread-hop
+ * vẫn điền {@code [cid=]}.</p>
  */
+@Slf4j
 @Component
 public class CorrelationIdGatewayFilter implements GlobalFilter, Ordered {
 
@@ -41,15 +45,19 @@ public class CorrelationIdGatewayFilter implements GlobalFilter, Ordered {
 				.build();
 		exchange.getResponse().getHeaders().set(HEADER, finalCid);
 
-		// --- 3) WebFlux: MDC theo Reactor Context (thread có thể đổi) ---
-		return chain.filter(exchange.mutate().request(request).build())
-				.doOnEach(signal -> {
-					if (signal.getContextView().hasKey(MDC_KEY)) {
-						MDC.put(MDC_KEY, signal.getContextView().get(MDC_KEY));
-					}
+		ServerWebExchange mutated = exchange.mutate().request(request).build();
+		String method = request.getMethod() != null ? request.getMethod().name() : "?";
+		String path = request.getPath().value();
+
+		// --- 3) Context + MDC trước khi filter sau (JWT) chạy ---
+		return Mono.deferContextual(ctx -> {
+					String cid = ctx.get(MDC_KEY);
+					MDC.put(MDC_KEY, cid);
+					log.info("Gateway {} {}", method, path);
+					return chain.filter(mutated);
 				})
-				.contextWrite(Context.of(MDC_KEY, finalCid))
-				.doFinally(signalType -> MDC.remove(MDC_KEY));
+				.doFinally(signalType -> MDC.remove(MDC_KEY))
+				.contextWrite(Context.of(MDC_KEY, finalCid));
 	}
 
 	@Override
