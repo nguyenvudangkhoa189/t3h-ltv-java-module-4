@@ -1,0 +1,8 @@
+# Lab 1: cần target/*.jar sau ./mvnw package
+# Cách đơn giản — không ignore target/ (chỉ bỏ IDE / git)
+
+.idea/
+.vscode/
+*.iml
+.git/
+.gitignore
