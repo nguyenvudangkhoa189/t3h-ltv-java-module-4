@@ -1,0 +1,9 @@
+# Lab 2 multi-stage: build JAR bên trong image → ignore target/
+target/
+.idea/
+.vscode/
+*.iml
+.git/
+.gitignore
+sample-data/
+scripts/

@@ -1,0 +1,41 @@
+# Lab 2 — Trường hợp 1: máy CHƯA có MongoDB
+# Chạy cả app + mongo trong Compose (cùng Docker network).
+# Host trong URI = tên service "mongo" (KHÔNG phải localhost).
+#
+# User/password lab: root / DBVWiYdDoMnfWmK (khớp demo Module 3/4).
+# Nếu máy đã có Mongo chiếm :27017 → dùng docker-compose.host-mongo.yml (trường hợp 2).
+
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      # Compass / mongoimport từ máy HV (tuỳ chọn)
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: DBVWiYdDoMnfWmK
+    volumes:
+      # Persist khi compose down (xoá volume: compose down -v)
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    build:
+      context: ./java-springboot-bai7
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      # Hostname "mongo" = DNS nội bộ Compose
+      SPRING_DATA_MONGODB_URI: mongodb://root:DBVWiYdDoMnfWmK@mongo:27017/db_java_t3h_module3_bai_7?authSource=admin
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo-data:

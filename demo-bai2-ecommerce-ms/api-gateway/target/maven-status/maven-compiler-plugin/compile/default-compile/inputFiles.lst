@@ -1,4 +1,0 @@
-/Users/nvdangkhoa/Documents/DATA/T3H/ltv-java-demo/t3h-ltv-java-module-4/demo-bai2-ecommerce-ms/api-gateway/src/main/java/vn/demo/ApiGatewayApplication.java
-/Users/nvdangkhoa/Documents/DATA/T3H/ltv-java-demo/t3h-ltv-java-module-4/demo-bai2-ecommerce-ms/api-gateway/src/main/java/vn/demo/filter/CorrelationIdGatewayFilter.java
-/Users/nvdangkhoa/Documents/DATA/T3H/ltv-java-demo/t3h-ltv-java-module-4/demo-bai2-ecommerce-ms/api-gateway/src/main/java/vn/demo/filter/JwtAuthGatewayFilter.java
-/Users/nvdangkhoa/Documents/DATA/T3H/ltv-java-demo/t3h-ltv-java-module-4/demo-bai2-ecommerce-ms/api-gateway/src/main/java/vn/demo/service/JwtService.java

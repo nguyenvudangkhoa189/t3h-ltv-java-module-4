@@ -1,0 +1,21 @@
+# Lab 2 — Trường hợp 2: máy ĐÃ có MongoDB (cài native hoặc docker run mongo sẵn trên :27017)
+# Chỉ chạy container APP. Mongo nằm trên máy host.
+#
+# Trong container, localhost ≠ máy HV → dùng host.docker.internal (Docker Desktop).
+# extra_hosts: hỗ trợ Linux (Docker Compose v2+).
+#
+# Chỉnh user/password/DB trong URI cho khớp Mongo trên máy bạn.
+# Không map :27017 (tránh đụng Mongo đang chạy).
+
+services:
+  app:
+    build:
+      context: ./java-springboot-bai7
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # host.docker.internal = máy HV nhìn từ trong container (Docker Desktop / Compose)
+      SPRING_DATA_MONGODB_URI: mongodb://root:DBVWiYdDoMnfWmK@host.docker.internal:27017/db_java_t3h_module3_bai_7?authSource=admin
