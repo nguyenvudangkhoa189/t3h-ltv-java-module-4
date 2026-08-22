@@ -1,4 +1,0 @@
-vn/demo/service/JwtService.class
-vn/demo/ApiGatewayApplication.class
-vn/demo/filter/CorrelationIdGatewayFilter.class
-vn/demo/filter/JwtAuthGatewayFilter.class
