@@ -24,9 +24,9 @@ public class OpenApiConfig {
 						.title("Phụ lục 3 — Redis Cache API")
 						.version("v1")
 						.description("""
-								Demo Spring Cache + Redis (Docker).
-								Gợi ý lab: gọi GET hello-cache / products/{id} hai lần để thấy HIT;
-								PUT/DELETE products để thấy @CacheEvict.
+								Demo Spring Cache + Redis (Docker) + Product trên MongoDB.
+								Gợi ý lab: GET /api/products lấy Mongo _id → GET by id hai lần (HIT);
+								PUT/DELETE để thấy @CacheEvict. Mongo = nguồn sự thật; Redis = cache.
 								"""));
 	}
 

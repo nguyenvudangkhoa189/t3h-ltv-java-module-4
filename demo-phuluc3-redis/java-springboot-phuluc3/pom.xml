@@ -35,6 +35,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+		<!-- Product nguồn sự thật — MongoDB (convention giống demo-bai4) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
 		<!-- Validate ProductRequest (@NotBlank, @NotNull, @DecimalMin) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

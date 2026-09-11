@@ -15,7 +15,9 @@ import vn.demo.product.model.Product;
 import vn.demo.product.repository.ProductRepository;
 
 /**
- * Seed vài Product khi app start — để gọi {@code GET /api/products/1} ngay (syllabus §5).
+ * Seed vài Product vào Mongo khi collection trống (syllabus §5).
+ *
+ * <p>Idempotent: {@code count() > 0} thì bỏ qua (giống tinh thần RbacDataSeeder demo-bai4).</p>
  */
 @Slf4j
 @Component
@@ -29,20 +31,27 @@ public class DataSeeder implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) {
-		// 1) Tắt seed khi test / khi đã có data
-		if (!seedOnStartup || productRepository.count() > 0) {
+		// 1) Tắt seed khi test
+		if (!seedOnStartup) {
 			return;
 		}
 
-		// 2) Tạo vài sản phẩm mẫu (id sẽ được repository gán)
+		// 2) Idempotent — đã có document trên Mongo thì bỏ qua
+		long existing = productRepository.count();
+		if (existing > 0) {
+			log.info("[DataSeeder] products đã có {} document — skip seed", existing);
+			return;
+		}
+
+		// 3) Tạo vài sản phẩm mẫu (Mongo tự gán _id)
 		Instant now = Instant.now();
 		Product laptop = product("Laptop Pro", new BigDecimal("22990000"), "Laptop học Spring Boot", now);
 		Product mouse = product("Chuột không dây", new BigDecimal("350000"), "Phụ kiện lab", now);
 		Product keyboard = product("Bàn phím cơ", new BigDecimal("890000"), "Gõ code", now);
 
-		// 3) Lưu in-memory
-		productRepository.saveAll(List.of(laptop, mouse, keyboard));
-		log.info("[DataSeeder] Seed 3 products — id thường là 1, 2, 3");
+		// 4) Lưu Mongo
+		List<Product> saved = productRepository.saveAll(List.of(laptop, mouse, keyboard));
+		log.info("[DataSeeder] Seed {} products vào Mongo — gọi GET /api/products để lấy id", saved.size());
 	}
 
 	private static Product product(String name, BigDecimal price, String description, Instant at) {

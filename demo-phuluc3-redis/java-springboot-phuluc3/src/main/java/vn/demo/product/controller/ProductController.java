@@ -24,62 +24,63 @@ import vn.demo.product.model.Product;
 import vn.demo.product.service.ProductService;
 
 /**
- * CONTROLLER — CRUD Product; cache nằm ở Service (syllabus §5).
+ * CONTROLLER — CRUD Product (Mongo); cache nằm ở Service (syllabus §5).
  *
- * <p>Controller mỏng: nhận request / trả response — không gọi Redis trực tiếp.</p>
+ * <p>Controller mỏng: nhận request / trả response — không gọi Redis/Mongo trực tiếp.</p>
  */
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-@Tag(name = "Products", description = "§5 — GET @Cacheable; POST/PUT/DELETE @CacheEvict")
+@Tag(name = "Products", description = "§5 — Mongo nguồn sự thật; GET @Cacheable; POST/PUT/DELETE @CacheEvict")
 public class ProductController {
 
 	private final ProductService productService;
 
 	@GetMapping
-	@Operation(summary = "Liệt kê products", description = "Cache key cố định 'all'.")
+	@Operation(summary = "Liệt kê products", description = "Cache key cố định 'all'. Seed lần đầu tạo 3 product.")
 	public List<Product> findAll() {
 		return productService.findAll();
 	}
 
 	@GetMapping("/{id}")
 	@Operation(
-			summary = "Lấy product theo id",
-			description = "Lần 1 MISS (log Repository); lần 2 HIT. Sau PUT/DELETE phải thấy data mới.")
+			summary = "Lấy product theo id (Mongo _id)",
+			description = "Lần 1 MISS (log Mongo); lần 2 HIT. Sau PUT/DELETE phải thấy data mới. "
+					+ "Lấy id từ GET /api/products hoặc response seed.")
 	@ApiResponse(responseCode = "404", description = "Không tìm thấy product")
 	public Product getById(
-			@Parameter(description = "ID product (seed: 1, 2, 3)", example = "1")
-			@PathVariable Long id) {
+			@Parameter(description = "Mongo ObjectId của product", example = "66f000000000000000000001")
+			@PathVariable String id) {
 		return productService.getById(id);
 	}
 
 	@PostMapping
-	@Operation(summary = "Tạo product", description = "Evict toàn bộ cache products.")
+	@Operation(summary = "Tạo product (lưu Mongo)", description = "Evict toàn bộ cache products.")
 	@ApiResponse(responseCode = "201", description = "Đã tạo")
 	public ResponseEntity<Product> create(@Valid @RequestBody ProductRequest request) {
-		// 1) Tạo qua Service (có @CacheEvict)
+		// 1) Tạo qua Service (Mongo + @CacheEvict)
 		Product created = productService.create(request);
 		// 2) 201 Created
 		return ResponseEntity.status(HttpStatus.CREATED).body(created);
 	}
 
 	@PutMapping("/{id}")
-	@Operation(summary = "Cập nhật product", description = "Evict cache — GET sau đó phải MISS + giá mới.")
+	@Operation(summary = "Cập nhật product (Mongo)", description = "Evict cache — GET sau đó phải MISS + giá mới.")
 	@ApiResponse(responseCode = "404", description = "Không tìm thấy product")
 	public Product update(
-			@Parameter(description = "ID product", example = "1")
-			@PathVariable Long id,
+			@Parameter(description = "Mongo ObjectId", example = "66f000000000000000000001")
+			@PathVariable String id,
 			@Valid @RequestBody ProductRequest request) {
 		return productService.update(id, request);
 	}
 
 	@DeleteMapping("/{id}")
-	@Operation(summary = "Xóa product", description = "Evict toàn bộ cache products.")
+	@Operation(summary = "Xóa product (Mongo)", description = "Evict toàn bộ cache products.")
 	@ApiResponse(responseCode = "204", description = "Đã xóa")
 	@ApiResponse(responseCode = "404", description = "Không tìm thấy product")
 	public ResponseEntity<Void> delete(
-			@Parameter(description = "ID product", example = "1")
-			@PathVariable Long id) {
+			@Parameter(description = "Mongo ObjectId", example = "66f000000000000000000001")
+			@PathVariable String id) {
 		productService.delete(id);
 		return ResponseEntity.noContent().build();
 	}

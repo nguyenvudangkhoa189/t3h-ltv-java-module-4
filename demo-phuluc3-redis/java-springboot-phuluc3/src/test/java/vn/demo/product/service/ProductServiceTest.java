@@ -21,7 +21,7 @@ import vn.demo.product.model.Product;
 import vn.demo.product.repository.ProductRepository;
 
 /**
- * Unit test ProductService — mock Repository (không cần Redis).
+ * Unit test ProductService — mock Mongo Repository (không cần Mongo/Redis).
  *
  * <p>Annotation {@code @Cacheable}/{@code @CacheEvict} chỉ có hiệu lực qua Spring AOP proxy;
  * unit test Mockito gọi thẳng instance → tập trung logic nghiệp vụ.</p>
@@ -39,34 +39,34 @@ class ProductServiceTest {
 	void getById_found_returnsProduct() {
 		// 1) Arrange
 		Product p = new Product();
-		p.setId(1L);
+		p.setId("p1");
 		p.setName("Laptop");
 		p.setPrice(new BigDecimal("1000"));
-		when(productRepository.findById(1L)).thenReturn(Optional.of(p));
+		when(productRepository.findById("p1")).thenReturn(Optional.of(p));
 
 		// 2) Act
-		Product result = productService.getById(1L);
+		Product result = productService.getById("p1");
 
 		// 3) Assert
 		assertEquals("Laptop", result.getName());
-		verify(productRepository).findById(1L);
+		verify(productRepository).findById("p1");
 	}
 
 	@Test
 	void getById_missing_throwsNotFound() {
-		when(productRepository.findById(99L)).thenReturn(Optional.empty());
+		when(productRepository.findById("missing")).thenReturn(Optional.empty());
 
-		assertThrows(ResourceNotFoundException.class, () -> productService.getById(99L));
+		assertThrows(ResourceNotFoundException.class, () -> productService.getById("missing"));
 	}
 
 	@Test
 	void update_changesFields_andSaves() {
-		// 1) Product hiện có
+		// 1) Product hiện có trên Mongo
 		Product existing = new Product();
-		existing.setId(1L);
+		existing.setId("p1");
 		existing.setName("Cũ");
 		existing.setPrice(new BigDecimal("100"));
-		when(productRepository.findById(1L)).thenReturn(Optional.of(existing));
+		when(productRepository.findById("p1")).thenReturn(Optional.of(existing));
 		when(productRepository.save(any(Product.class))).thenAnswer(inv -> inv.getArgument(0));
 
 		// 2) Request mới
@@ -76,7 +76,7 @@ class ProductServiceTest {
 		req.setDescription("Sau khi update");
 
 		// 3) Update
-		Product saved = productService.update(1L, req);
+		Product saved = productService.update("p1", req);
 
 		assertEquals("Laptop Pro", saved.getName());
 		assertEquals(new BigDecimal("24990000"), saved.getPrice());
@@ -85,9 +85,9 @@ class ProductServiceTest {
 
 	@Test
 	void delete_missing_throwsNotFound() {
-		when(productRepository.existsById(99L)).thenReturn(false);
+		when(productRepository.existsById("missing")).thenReturn(false);
 
-		assertThrows(ResourceNotFoundException.class, () -> productService.delete(99L));
+		assertThrows(ResourceNotFoundException.class, () -> productService.delete("missing"));
 	}
 
 }

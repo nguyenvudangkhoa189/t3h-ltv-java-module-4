@@ -20,12 +20,15 @@ Sau phụ lục này, học viên có thể:
 - **Module 2 — Bài 5+**: Controller → Service → Repository
 - *(Khuyến khích)* **[Module 4 — Bài 7 Docker](./6_java_m4_bai7_Docker.md)**: đã chạy container, biết `docker run` / `docker compose`
 - *(Khuyến khích)* **Phụ lục 1 — Scheduled**: quen tách Job/Service; có thể kết hợp job làm mới cache
+- *(Khuyến khích)* **[Module 4 — Bài 4 Auth](./4_java_m4_bai4_Authentication_Authorization.md)** / [demo-bai4-auth](../../demo-bai4-auth): đã quen `spring.data.mongodb.uri`, `@Document`, `MongoRepository`
 - JDK 17+, Spring Boot 3.x
-- **Docker Desktop** (hoặc Docker Engine) đang chạy
+- **MongoDB** đang chạy (URI trong `application.properties`)
+- **Docker Desktop** (hoặc Docker Engine) đang chạy — cho Redis
 
-> **Demo chuẩn:** [`demo-phuluc3-redis`](../../demo-phuluc3-redis) — in-memory “DB giả” + Redis cache thật qua Docker, đủ Hello cache + Product CRUD + TTL + Swagger UI + unit test Service (mock cache / không bắt buộc Redis khi test).  
+> **Demo chuẩn:** [`demo-phuluc3-redis`](../../demo-phuluc3-redis) — **MongoDB** (Product nguồn sự thật) + **Redis cache** qua Docker, đủ Hello cache + Product CRUD + TTL + Swagger UI + unit test Service (mock repo).  
 > Chi tiết chạy app / API: [README](../../demo-phuluc3-redis/README.md).  
-> **Swagger UI:** sau khi chạy app → [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+> **Swagger UI:** sau khi chạy app → [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)  
+> Mongo URI cùng kiểu [demo-bai4-auth](../../demo-bai4-auth) — DB riêng `db_java_t3h_module4_phuluc3`.
 
 > **Vai trò phụ lục:** Kỹ năng **bổ trợ backend** (tăng tốc đọc dữ liệu nóng), dùng được trong Final Project / microservice nhỏ. Không thay các bài chính Module 4 (REST, Auth, Docker…).
 
@@ -52,7 +55,7 @@ Sau phụ lục này, học viên có thể:
 | 2       | Redis Docker + Redis Insight        | **Tạo** `docker-compose.yml` · **Chạy** · `PING` · mở Insight            | `PONG`; UI :5540 thấy Redis              |
 | 3       | Dependency + EnableCaching + TTL/JSON config | **Thêm** starter · properties · `@EnableCaching` · `RedisCacheConfig` | App start; kết nối Redis OK              |
 | 4       | Hello `@Cacheable`                  | **Thêm** `HelloCacheService` · **Thêm** `HelloCacheController`           | Lần 2 nhanh hơn lần 1                    |
-| 5       | Product cache + `@CacheEvict`       | **Thêm** package `product/`* · `DataSeeder` · GET cache · PUT evict      | Update → lần GET tiếp theo lấy data mới  |
+| 5       | Product Mongo + cache + `@CacheEvict` | **Cấu hình** URI · `@Document` · `MongoRepository` · seed · GET/PUT | Update → GET lấy data mới từ Mongo      |
 | 6       | Quan sát / chỉnh TTL                | **Đổi** `app.cache.*-ttl-seconds` · đợi hết hạn · GET lại                | Key tự hết hạn sau N giây                |
 | 7       | Lỗi thường gặp                      | Đọc bảng                                                                 | Tự sửa khi app không kết nối Redis       |
 | 8       | Nâng cao (đọc hiểu)                 | Optional                                                                 | Biết `@CachePut`, key SpEL, multi-instance |
@@ -77,11 +80,10 @@ demo-phuluc3-redis/
         ├── hello/
         │   ├── HelloCacheService.java         ← §4 @Cacheable giả lập chậm ★
         │   └── controller/HelloCacheController.java
-        ├── product/                           ← §5 ví dụ thực tế
-        │   ├── model/Product.java
+        ├── product/                           ← §5 ví dụ thực tế (Mongo)
+        │   ├── model/Product.java             ← @Document(collection="products")
         │   ├── dto/ProductRequest.java        ← class + validation (không dùng record)
-        │   ├── repository/ProductRepository.java
-        │   ├── repository/InMemoryProductRepository.java
+        │   ├── repository/ProductRepository.java  ← MongoRepository<Product, String>
         │   ├── service/ProductService.java      ★ @Cacheable / @CacheEvict
         │   └── controller/ProductController.java
         └── exception/
@@ -89,7 +91,7 @@ demo-phuluc3-redis/
             └── RestExceptionHandler.java
 ```
 
-> Demo dùng **in-memory Repository** làm “DB giả” để tập trung Redis Cache. Production đổi sang JPA/Mongo mà **không đổi** annotation cache trên Service (miễn là cùng tên method / key).
+> Demo dùng **MongoDB** làm nguồn sự thật Product (convention [demo-bai4](../../demo-bai4-auth)). Redis chỉ **cache** bản đọc. Hello cache vẫn giả lập chậm in-process.
 
 ```mermaid
 flowchart LR
@@ -290,7 +292,7 @@ docker exec -it demo-phuluc3-redis redis-cli GET lab:hello
 
 | Bước | Hành động                                                              | File / ghi chú                |
 | ---- | ---------------------------------------------------------------------- | ----------------------------- |
-| 3.1  | **Thêm** `spring-boot-starter-data-redis` + `spring-boot-starter-cache` (+ web, validation, lombok) | [`pom.xml`](../../demo-phuluc3-redis/java-springboot-phuluc3/pom.xml) |
+| 3.1  | **Thêm** `starter-data-redis` + `starter-cache` + `starter-data-mongodb` (+ web, validation, lombok, springdoc) | [`pom.xml`](../../demo-phuluc3-redis/java-springboot-phuluc3/pom.xml) |
 | 3.2  | **Cập nhật** `spring.data.redis.*` + `spring.cache.type` + TTL properties | [`application.properties`](../../demo-phuluc3-redis/java-springboot-phuluc3/src/main/resources/application.properties) |
 | 3.3  | **Thêm** `@EnableCaching` trên Application                             | [`DemoPhuluc3RedisApplication.java`](../../demo-phuluc3-redis/java-springboot-phuluc3/src/main/java/vn/demo/DemoPhuluc3RedisApplication.java) |
 | 3.4  | **Thêm** `RedisCacheConfig` — JSON serializer + TTL theo cache name    | [`RedisCacheConfig.java`](../../demo-phuluc3-redis/java-springboot-phuluc3/src/main/java/vn/demo/config/RedisCacheConfig.java) |
@@ -525,12 +527,13 @@ docker exec -it demo-phuluc3-redis redis-cli KEYS '*'
 
 | Bước | Hành động                                                 | File / ghi chú                    |
 | ---- | --------------------------------------------------------- | --------------------------------- |
-| 5.1  | Hiểu luồng GET cache / PUT evict                          | Không code                        |
-| 5.2  | **Thêm** `Product` + `ProductRequest` + repository in-memory | `product/model/`* · `product/dto/`* · `product/repository/`* |
-| 5.3  | **Thêm** `DataSeeder` (3 sản phẩm khi start)              | [`DataSeeder.java`](../../demo-phuluc3-redis/java-springboot-phuluc3/src/main/java/vn/demo/config/DataSeeder.java) |
+| 5.0  | **Cấu hình** `spring.data.mongodb.uri` (+ tắt Redis repos) | `application.properties` (như Bài 4) |
+| 5.1  | Hiểu luồng GET cache / PUT evict (Mongo = nguồn sự thật)  | Không code                        |
+| 5.2  | **Thêm** `Product` `@Document` + `ProductRequest` + `MongoRepository` | `product/model/`* · `dto/`* · `repository/`* |
+| 5.3  | **Thêm** `DataSeeder` (3 sản phẩm khi collection trống)   | [`DataSeeder.java`](../../demo-phuluc3-redis/java-springboot-phuluc3/src/main/java/vn/demo/config/DataSeeder.java) |
 | 5.4  | **Thêm** `ProductService` với `@Cacheable` / `@CacheEvict`| [`ProductService.java`](../../demo-phuluc3-redis/java-springboot-phuluc3/src/main/java/vn/demo/product/service/ProductService.java) |
 | 5.5  | **Thêm** `ProductController` + exception handler          | `ProductController` · `exception/`* |
-| 5.6  | Gọi GET 2 lần → PUT → GET lại                             | Chứng minh evict                  |
+| 5.6  | `GET /api/products` lấy `_id` → GET by id 2 lần → PUT → GET | Chứng minh cache + evict          |
 
 
 ### 5.1. Nghiệp vụ
@@ -568,74 +571,48 @@ sequenceDiagram
 
 
 
-### 5.2. Model / DTO / Repository (tóm tắt)
+### 5.2. Model / DTO / Repository (Mongo — giống demo-bai4)
 
-- `Product`: `id`, `name`, `price`, `description`, `updatedAt` — cần `@NoArgsConstructor` để Jackson deserialize từ Redis
-- `ProductRequest`: **class** + Lombok `@Getter/@Setter` + `@NotBlank` / `@NotNull` / `@DecimalMin` (convention module-3/phuluc — **không** dùng `record`)
-- `ProductRepository` + `InMemoryProductRepository` (`ConcurrentHashMap` + `AtomicLong` id)
-- `DataSeeder`: seed 3 sản phẩm khi `app.product.seed-on-startup=true`
+```properties
+# application.properties — chỉnh URI theo máy (authSource=admin nếu có user)
+spring.data.mongodb.uri=mongodb://root:DBVWiYdDoMnfWmK@localhost:27017/db_java_t3h_module4_phuluc3?authSource=admin
+# Có Mongo + Redis starter → tránh quét nhầm repository
+spring.data.redis.repositories.enabled=false
+```
+
+- `Product`: `@Document(collection = "products")`, `@Id String id`, `name`, `price`, `description`, `updatedAt`
+- `ProductRequest`: **class** + Lombok + validation (convention module-3/phuluc)
+- `ProductRepository extends MongoRepository<Product, String>` — **không** còn in-memory
+- `DataSeeder`: seed 3 product khi `count() == 0` và `app.product.seed-on-startup=true`
 - Không tìm thấy → `ResourceNotFoundException("Product", id)` → HTTP **404**
+- **Id API** = Mongo ObjectId (string) — lấy từ `GET /api/products`, không còn `1/2/3` cố định
 
-### 5.3. ProductService — cache đọc, evict khi ghi
+### 5.3. ProductService — cache đọc, evict khi ghi (Mongo)
 
 ```java
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class ProductService {
+@Cacheable(cacheNames = "products", key = "#id")
+public Product getById(String id) {
+    // 1) Log MISS — đang đọc Mongo
+    log.info("[ProductService] MISS — đọc Mongo id={}", id);
+    return productRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Product", id));
+}
 
-    private final ProductRepository productRepository;
-
-    @Cacheable(cacheNames = "products", key = "#id")
-    public Product getById(Long id) {
-        // 1) Log MISS — thấy dòng này = đang đọc “DB giả”
-        log.info("[ProductService] MISS — đọc Repository id={}", id);
-        // 2) Đọc nguồn sự thật; không có → 404
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
-    }
-
-    /** Lab: danh sách ngắn — cache key cố định 'all'; nhớ evict khi ghi. */
-    @Cacheable(cacheNames = "products", key = "'all'")
-    public List<Product> findAll() {
-        log.info("[ProductService] MISS — findAll Repository");
-        return productRepository.findAll();
-    }
-
-    @CacheEvict(cacheNames = "products", allEntries = true)
-    public Product create(ProductRequest request) {
-        // 1) Map DTO → entity · 2) Lưu · 3) @CacheEvict xoá cache products
-        Product saved = productRepository.save(toNewProduct(request));
-        log.info("[ProductService] create id={} — evict all products cache", saved.getId());
-        return saved;
-    }
-
-    @CacheEvict(cacheNames = "products", allEntries = true)
-    public Product update(Long id, ProductRequest request) {
-        // 1) Đọc thẳng Repository (không qua getById — tránh phụ thuộc cache khi ghi)
-        Product existing = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
-        // 2) Gán field từ DTO (getter — class, không phải record)
-        existing.setName(request.getName());
-        existing.setPrice(request.getPrice());
-        existing.setDescription(request.getDescription());
-        existing.setUpdatedAt(Instant.now());
-        // 3) Lưu + evict
-        Product saved = productRepository.save(existing);
-        log.info("[ProductService] update id={} — evict all products cache", id);
-        return saved;
-    }
-
-    @CacheEvict(cacheNames = "products", allEntries = true)
-    public void delete(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product", id);
-        }
-        productRepository.deleteById(id);
-        log.info("[ProductService] delete id={} — evict all products cache", id);
-    }
+@CacheEvict(cacheNames = "products", allEntries = true)
+public Product update(String id, ProductRequest request) {
+    // 1) Đọc thẳng Mongo (không qua getById)
+    Product existing = productRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Product", id));
+    // 2) Gán field · 3) save Mongo · @CacheEvict xoá cache
+    existing.setName(request.getName());
+    existing.setPrice(request.getPrice());
+    existing.setDescription(request.getDescription());
+    existing.setUpdatedAt(Instant.now());
+    return productRepository.save(existing);
 }
 ```
+
+> Full `create` / `findAll` / `delete` xem demo [`ProductService.java`](../../demo-phuluc3-redis/java-springboot-phuluc3/src/main/java/vn/demo/product/service/ProductService.java).
 
 **Kiến thức mới — `@CacheEvict`:**
 
@@ -660,19 +637,20 @@ Controller mỏng — chỉ gọi Service + `@Valid` trên `ProductRequest` (xem
 **Kiểm tra:**
 
 ```bash
-# 1) Lần 1 — MISS (có log đọc Repository)
-curl -s http://localhost:8080/api/products/1
+# 1) Lấy danh sách + Mongo _id
+curl -s http://localhost:8080/api/products
 
-# 2) Lần 2 — HIT (không log MISS)
-curl -s http://localhost:8080/api/products/1
+# 2) Thay ID bằng _id thật — lần 1 MISS (log Mongo), lần 2 HIT
+curl -s http://localhost:8080/api/products/ID
+curl -s http://localhost:8080/api/products/ID
 
-# 3) Cập nhật giá
-curl -s -X PUT http://localhost:8080/api/products/1 \
+# 3) Cập nhật giá → evict
+curl -s -X PUT http://localhost:8080/api/products/ID \
   -H "Content-Type: application/json" \
   -d '{"name":"Laptop Pro","price":24990000,"description":"Sau khi update"}'
 
-# 4) GET lại — phải MISS rồi thấy price mới
-curl -s http://localhost:8080/api/products/1
+# 4) GET lại — phải MISS rồi thấy price mới (đồng thời document Mongo đã đổi)
+curl -s http://localhost:8080/api/products/ID
 ```
 
 ---
@@ -776,6 +754,7 @@ public Product update(Long id, ProductRequest request) { ... }
 | Cache vs DB                       | Kệ gần quầy vs kho — HIT/MISS/stale                             |
 | Redis Docker                      | `redis:7-alpine` · port `6379` · `PING` → `PONG`                |
 | `starter-data-redis` + `starter-cache` | Client Redis + abstraction `@Cacheable`                     |
+| Mongo Product                         | `@Document` + `MongoRepository` — nguồn sự thật             |
 | `@EnableCaching`                  | Bật cơ chế cache của Spring                                     |
 | `RedisCacheConfig` (§3.4)         | TTL theo cache name + JSON + `JavaTimeModule`                   |
 | `@Cacheable`                      | Đọc: miss thì chạy method + ghi cache                           |
@@ -792,8 +771,8 @@ public Product update(Long id, ProductRequest request) { ... }
 
 1. **Docker Redis:** `docker compose up -d` → `redis-cli PING` → `PONG`.
 2. **Hello cache:** Gọi `GET /api/hello-cache?name=Khoa` hai lần — lần 1 chậm, lần 2 nhanh; giải thích HIT/MISS.
-3. **Product GET:** Gọi `GET /api/products/1` hai lần — lần 2 không còn log MISS.
-4. **Evict:** `PUT` đổi `price` → `GET` lại phải thấy giá mới (và có log MISS).
+3. **Product:** `GET /api/products` lấy `_id` → `GET /{id}` hai lần — lần 2 không còn log MISS.
+4. **Evict:** `PUT` đổi `price` → `GET` lại phải thấy giá mới (và có log MISS); kiểm tra document trên Mongo đã đổi.
 5. **TTL:** Đặt `app.cache.product-ttl-seconds=10` — restart — sau 10s+ lần GET tiếp theo là MISS.
 6. **redis-cli:** Sau vài GET, chạy `KEYS *` — mô tả bạn thấy gì (không cần thuộc hết format key).
 7. **(Nâng cao):** Đổi `@CacheEvict(allEntries = true)` sang `@Caching` evict `#id` + `'all'`.
@@ -803,7 +782,8 @@ public Product update(Long id, ProductRequest request) { ... }
 
 - [ ] Giải thích được Cache khác đọc DB; biết HIT / MISS / Evict / TTL / stale
 - [ ] Chạy được Redis bằng Docker; `PING` → `PONG`
-- [ ] Có `spring-boot-starter-data-redis` + `spring-boot-starter-cache`
+- [ ] Có `starter-data-redis` + `starter-cache` + `starter-data-mongodb`
+- [ ] `spring.data.mongodb.uri` đúng; Product lưu/đọc được trên Mongo
 - [ ] `spring.data.redis.host/port` đúng; `spring.cache.type=redis`
 - [ ] Có `@EnableCaching` và thấy Hello cache lần 2 nhanh hơn
 - [ ] Product: GET được cache; PUT/DELETE có evict
