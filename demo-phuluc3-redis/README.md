@@ -20,7 +20,7 @@ App **gọn**, **in-memory Product** (không Mongo/JPA) + **Redis thật qua Doc
 - **Docker Desktop** (hoặc Docker Engine) đang chạy
 - **Không cần** MongoDB / Gmail
 
-## Chạy Redis (bắt buộc trước app)
+## Chạy Redis + Redis Insight (bắt buộc Redis trước app)
 
 ```bash
 cd demo-phuluc3-redis
@@ -29,12 +29,50 @@ docker exec -it demo-phuluc3-redis redis-cli PING
 # → PONG
 ```
 
+| Service | URL / port | Việc làm |
+|---------|------------|----------|
+| **Redis** | `localhost:6379` | App Spring kết nối |
+| **Redis Insight** | [http://localhost:5540](http://localhost:5540) | GUI xem key / TTL / value |
+
+### Kết nối Redis trong Insight (một lần)
+
+> **Lỗi hay gặp:** nhập Host = `localhost` / `127.0.0.1` → **không kết nối được**.  
+> Insight chạy **trong Docker**; `localhost` lúc đó là chính container Insight, không phải Redis.
+
+1. Mở http://localhost:5540 → **Add Redis database**
+2. Điền đúng:
+   - **Host:** `redis` ← tên service trong `docker-compose.yml`
+   - **Port:** `6379`
+   - Không cần password (lab)
+3. **Test Connection** (nếu có) → phải OK → **Add Redis Database**
+4. Sau khi gọi API cache (Swagger), bấm refresh trên Browser → thấy key `hello` / `products`
+
+Nếu vẫn lỗi: recreate Insight (giữ data Redis):
+
+```bash
+docker compose up -d --force-recreate redis-insight
+```
+
+> Spring Boot trên máy host vẫn dùng `localhost:6379`. Chỉ **trong form Insight** mới dùng Host = `redis`.
 ## Chạy app
 
 ```bash
 cd demo-phuluc3-redis/java-springboot-phuluc3
 ./mvnw spring-boot:run
 ```
+
+## Swagger UI (khuyến nghị lab)
+
+Mở trình duyệt:
+
+**http://localhost:8080/swagger-ui/index.html**
+
+| Tag | Việc thử nhanh |
+|-----|----------------|
+| **Hello Cache** | `GET /api/hello-cache` hai lần cùng `name=Khoa` — lần 2 `tookMs` nhỏ |
+| **Products** | `GET /api/products/1` hai lần → `PUT` đổi giá → `GET` lại thấy giá mới |
+
+> springdoc giống Module 4 Bài 1 §5 — dependency `springdoc-openapi-starter-webmvc-ui` + `OpenApiConfig`.
 
 ## API nhanh
 
@@ -82,13 +120,14 @@ Quan sát:
 
 ```
 demo-phuluc3-redis/
-├── docker-compose.yml                 ← Redis :6379 ★
+├── docker-compose.yml                 ← Redis :6379 + Redis Insight :5540 ★
 ├── README.md
 └── java-springboot-phuluc3/
     └── src/main/java/vn/demo/
         ├── DemoPhuluc3RedisApplication.java   ← @EnableCaching ★
         ├── config/
-        │   ├── RedisCacheConfig.java          ← §6 TTL + JSON ★
+        │   ├── RedisCacheConfig.java          ← §3.4 TTL + JSON ★
+        │   ├── OpenApiConfig.java             ← Swagger UI metadata
         │   └── DataSeeder.java                ← seed 3 products
         ├── hello/
         │   ├── HelloCacheService.java         ← §4 @Cacheable ★
@@ -110,6 +149,7 @@ demo-phuluc3-redis/
 |----------|------|
 | §2 Redis Docker | `docker-compose.yml` · `redis-cli PING` |
 | §3 Dependency | `pom.xml` → `starter-data-redis` + `starter-cache` |
+| Swagger UI | `springdoc` + `OpenApiConfig` → `/swagger-ui/index.html` |
 | §3 Properties | `application.properties` (`spring.data.redis.*`, `spring.cache.type=redis`) |
 | §3 `@EnableCaching` | `DemoPhuluc3RedisApplication` |
 | §4 Hello cache | `HelloCacheService.greet` + `GET /api/hello-cache` |

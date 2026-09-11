@@ -1,5 +1,11 @@
-# Redis cho Demo Phụ lục 3 — chạy trước khi start Spring Boot (syllabus §2).
+# Redis + Redis Insight — Demo Phụ lục 3 (syllabus §2).
 # Usage: docker compose up -d
+# Redis:          localhost:6379  (Spring Boot trên máy host)
+# Redis Insight:  http://localhost:5540
+#
+# Trong Insight khi Add database:
+#   Host = redis     ← tên service Docker (KHÔNG dùng localhost)
+#   Port = 6379
 services:
   redis:
     image: redis:7-alpine
@@ -10,6 +16,29 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # GUI xem key / TTL / value JSON — tiện hơn redis-cli khi lab cache
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: demo-phuluc3-redis-insight
+    ports:
+      - "5540:5540"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      # Prefill kết nối tới service redis trên cùng Docker network
+      RI_REDIS_HOST: redis
+      RI_REDIS_PORT: "6379"
+      RI_REDIS_ALIAS: phuluc3-redis
+    volumes:
+      - redis-insight-data:/data
 
 volumes:
   redis-data:
+  redis-insight-data:

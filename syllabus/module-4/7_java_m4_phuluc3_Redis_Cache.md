@@ -23,8 +23,9 @@ Sau phụ lục này, học viên có thể:
 - JDK 17+, Spring Boot 3.x
 - **Docker Desktop** (hoặc Docker Engine) đang chạy
 
-> **Demo chuẩn:** [`demo-phuluc3-redis`](../../demo-phuluc3-redis) — in-memory “DB giả” + Redis cache thật qua Docker, đủ Hello cache + Product CRUD + TTL + unit test Service (mock cache / không bắt buộc Redis khi test).  
-> Chi tiết chạy app / API: [README](../../demo-phuluc3-redis/README.md).
+> **Demo chuẩn:** [`demo-phuluc3-redis`](../../demo-phuluc3-redis) — in-memory “DB giả” + Redis cache thật qua Docker, đủ Hello cache + Product CRUD + TTL + Swagger UI + unit test Service (mock cache / không bắt buộc Redis khi test).  
+> Chi tiết chạy app / API: [README](../../demo-phuluc3-redis/README.md).  
+> **Swagger UI:** sau khi chạy app → [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 > **Vai trò phụ lục:** Kỹ năng **bổ trợ backend** (tăng tốc đọc dữ liệu nóng), dùng được trong Final Project / microservice nhỏ. Không thay các bài chính Module 4 (REST, Auth, Docker…).
 
@@ -48,7 +49,7 @@ Sau phụ lục này, học viên có thể:
 | #       | Chủ đề                              | Việc HV làm (tóm tắt)                                                    | Kết quả kiểm tra                         |
 | ------- | ----------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------- |
 | 1       | Cache vs DB + khi nào dùng          | Đọc / thảo luận                                                          | Nói được hit / miss / stale              |
-| 2       | Redis Docker                        | **Tạo** `docker-compose.yml` · **Chạy** · `redis-cli PING`               | `PONG`; Redis lắng nghe `6379`           |
+| 2       | Redis Docker + Redis Insight        | **Tạo** `docker-compose.yml` · **Chạy** · `PING` · mở Insight            | `PONG`; UI :5540 thấy Redis              |
 | 3       | Dependency + EnableCaching + TTL/JSON config | **Thêm** starter · properties · `@EnableCaching` · `RedisCacheConfig` | App start; kết nối Redis OK              |
 | 4       | Hello `@Cacheable`                  | **Thêm** `HelloCacheService` · **Thêm** `HelloCacheController`           | Lần 2 nhanh hơn lần 1                    |
 | 5       | Product cache + `@CacheEvict`       | **Thêm** package `product/`* · `DataSeeder` · GET cache · PUT evict      | Update → lần GET tiếp theo lấy data mới  |
@@ -64,13 +65,14 @@ Sau phụ lục này, học viên có thể:
 
 ```
 demo-phuluc3-redis/
-├── docker-compose.yml                 ← §2 Redis :6379 ★
+├── docker-compose.yml                 ← §2 Redis :6379 + Redis Insight :5540 ★
 ├── README.md
 └── java-springboot-phuluc3/
     └── src/main/java/vn/demo/
         ├── DemoPhuluc3RedisApplication.java   ← @EnableCaching ★ (§3)
         ├── config/
         │   ├── RedisCacheConfig.java          ← §3 TTL + JSON serializer ★
+        │   ├── OpenApiConfig.java             ← Swagger UI (lab thử API)
         │   └── DataSeeder.java                ← §5 seed Product
         ├── hello/
         │   ├── HelloCacheService.java         ← §4 @Cacheable giả lập chậm ★
@@ -173,9 +175,10 @@ flowchart TB
 | Bước | Hành động                                              | File / ghi chú                          |
 | ---- | ------------------------------------------------------ | --------------------------------------- |
 | 2.1  | Kiểm tra Docker đang chạy                              | `docker version`                        |
-| 2.2  | **Tạo** `docker-compose.yml` (Redis)                   | [`docker-compose.yml`](../../demo-phuluc3-redis/docker-compose.yml) |
-| 2.3  | `docker compose up -d`                                 | Container `demo-phuluc3-redis` port `6379` |
+| 2.2  | **Tạo** `docker-compose.yml` (Redis + Redis Insight)   | [`docker-compose.yml`](../../demo-phuluc3-redis/docker-compose.yml) |
+| 2.3  | `docker compose up -d`                                 | Redis `:6379` · Insight `:5540`         |
 | 2.4  | Kiểm tra `PING` → `PONG` (+ thử `SET`/`GET`)           | `docker exec` + `redis-cli`             |
+| 2.5  | Mở Redis Insight · **Add database** host=`redis`       | [http://localhost:5540](http://localhost:5540) |
 
 
 ### Bước 2.1 — Docker sẵn sàng
@@ -198,13 +201,33 @@ services:
     container_name: demo-phuluc3-redis
     ports:
       - "6379:6379"
-    # Lab: không đặt password. Production nên dùng --requirepass / secrets.
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: demo-phuluc3-redis-insight
+    ports:
+      - "5540:5540"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      RI_REDIS_HOST: redis
+      RI_REDIS_PORT: "6379"
+      RI_REDIS_ALIAS: phuluc3-redis
+    volumes:
+      - redis-insight-data:/data
 
 volumes:
   redis-data:
+  redis-insight-data:
 ```
 
 **Kiến thức mới:**
@@ -212,8 +235,10 @@ volumes:
 - Image `redis:7-alpine` — nhẹ, đủ cho lab
 - Map `6379:6379` — app Spring trên máy host kết nối `localhost:6379`
 - `appendonly yes` — Redis ghi AOF (lab thấy data còn sau restart container; không bắt buộc hiểu sâu)
+- **Redis Insight** (`:5540`) — GUI xem key/TTL/value
+- **Host trong Insight = `redis`** (tên service), **không** dùng `localhost` — vì Insight cũng là container; `localhost` trỏ về chính nó
 
-### Bước 2.3 — Chạy Redis
+### Bước 2.3 — Chạy Redis + Insight
 
 ```bash
 cd demo-phuluc3-redis
@@ -221,9 +246,9 @@ docker compose up -d
 docker compose ps
 ```
 
-→ trạng thái `Up`; port `0.0.0.0:6379->6379/tcp`.
+→ cả `demo-phuluc3-redis` và `demo-phuluc3-redis-insight` trạng thái `Up`; port `6379` và `5540`.
 
-**Một lệnh thay thế (không compose):**
+**Một lệnh thay thế chỉ Redis (không Insight):**
 
 ```bash
 docker run -d --name demo-phuluc3-redis -p 6379:6379 redis:7-alpine
@@ -246,9 +271,17 @@ docker exec -it demo-phuluc3-redis redis-cli GET lab:hello
 
 → `"xin-chao"`.
 
-> **Câu chốt:** App Spring Boot **không** chứa Redis — Redis chạy **process/container riêng**. App chỉ là client nối tới `localhost:6379`.
+### Bước 2.5 — Redis Insight (xem key cho tiện)
 
----
+1. Mở [http://localhost:5540](http://localhost:5540)
+2. **Add Redis database**
+3. Host: **`redis`** · Port: **`6379`** · không password  
+   - Sai: `localhost` / `127.0.0.1` → Insight không tới được Redis  
+   - Đúng: `redis` (DNS nội bộ Docker compose)
+4. Test Connection → Add
+5. Sau khi gọi API cache (Swagger), refresh Browser trên Insight → thấy key thuộc cache `hello` / `products`
+
+> **Câu chốt:** Spring trên máy host → `localhost:6379`. Insight trong Docker → Host form = **`redis`**.---
 
 ## 3. Dependency + cấu hình Redis + `@EnableCaching` + `RedisCacheConfig`
 
