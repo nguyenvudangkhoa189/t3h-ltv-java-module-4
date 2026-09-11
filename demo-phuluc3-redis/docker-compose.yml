@@ -1,0 +1,15 @@
+# Redis cho Demo Phụ lục 3 — chạy trước khi start Spring Boot (syllabus §2).
+# Usage: docker compose up -d
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: demo-phuluc3-redis
+    ports:
+      - "6379:6379"
+    # Lab: không đặt password. Production nên dùng --requirepass / secrets.
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

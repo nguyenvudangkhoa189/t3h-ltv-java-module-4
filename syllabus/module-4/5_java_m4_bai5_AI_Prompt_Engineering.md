@@ -471,4 +471,4 @@ Output: bullet tiếng Việt; KHÔNG rewrite cả file trừ khi được yêu 
 - [M3 Bài 8 — Unit Testing](../../../t3h-ltv-java-module-3/syllabus/module-3/java_m3_bai8_Unit_Testing.md)
 - [M4 Bài 1 §5 — springdoc](./1_java_m4_bai1_RESTful_API.md)
 - [M4 Bài 7 — Docker](./6_java_m4_bai7_Docker.md)
-- **Tiếp theo (gợi ý lộ trình M4):** [Bài 7 Docker](./6_java_m4_bai7_Docker.md) · [Bài 4 Auth](./4_java_m4_bai4_Authentication_Authorization.md)
+- **Tiếp theo (gợi ý lộ trình M4):** [Bài 6 AI Chatbot](./6_java_m4_bai6_AI_Chatbot.md) · [Bài 7 Docker](./6_java_m4_bai7_Docker.md) · [Bài 4 Auth](./4_java_m4_bai4_Authentication_Authorization.md)
